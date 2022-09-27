@@ -75,7 +75,7 @@ process concat_by_homology_rliger_uinmf {
     mkdir -p ${params.results}/results/rligerUINMF/h5ad_homology_concat && \
     Rscript ${projectDir}/bin/concat_by_homology_rligerUINMF_multiple_species.R --metadata ${metadata} \
     --out_dir ${params.results}/results/rligerUINMF/h5ad_homology_concat  --homology_tbl homology_tbl.csv \
-    --metadata_output rliger_uinmf_metadata.tsv
+    --metadata_output ${baseName}.tsv
 
     """
 }

@@ -1,0 +1,8 @@
+
+Yuyao Song <ysong@ebi.ac.uk>
+
+Pull SCCAF containers as follows:
+
+singularity pull sccaf.sif docker://yysong123/intgpy:sccaf
+
+This container is built for linux/amd64 machines and can be used on lsf clusters

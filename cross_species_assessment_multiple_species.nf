@@ -186,7 +186,9 @@ workflow {
     integrated_and_orig_h5ad = all_integrated_and_orig_h5ad_mapped_ch
     orig_h5ad = all_orig_h5ad_mapped_ch
     metadata_ch = metadata
-    
+    integrated_and_orig_h5ad.view()
+
+    return
     sccaf_assessment(metadata_ch)
     sccaf_projection(integrated_h5ad)
     kBET(integrated_h5ad)

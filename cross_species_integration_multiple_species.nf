@@ -199,8 +199,8 @@ process rligerUINMF_integration{
     tuple val(baseName), path(metadata)
 
     output:
-    path "rliger_uinmf_metadata_*_rligerUINMF_integrated.h5seurat"
-    path "rliger_uinmf_metadata_*_rligerUINMF_integrated_UMAP.pdf"
+    path "*_rligerUINMF_integrated.h5seurat"
+    path "*_rligerUINMF_integrated_UMAP.pdf"
 
     script:
     """
