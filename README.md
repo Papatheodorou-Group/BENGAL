@@ -24,11 +24,10 @@ Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory
 
 #### Pull the code for BENGAL
 `git clone git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
-#### If nextflow is not installed, install nextflow, [go to nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html)
-#### If singularity is not installed, install singularity, [go to singularity documentation](https://singularity-tutorial.github.io/01-installation/)
+#### If nextflow or singularity is not installed in your cluster, install them, [go to nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html), [go to singularity documentation](https://singularity-tutorial.github.io/01-installation/)
 
 ## Inputs:
-A tab-seperated metadata file mapping species to the paths of raw count AnnData objects, in the form of .h5ad files. See example:    `example_metadata_nf.tsv`.
+The nextflow script takes one input file: a tab-seperated metadata file mapping species to the paths of raw count AnnData objects, in the form of .h5ad files. See example: `example_metadata_nf.tsv`.
 
 #### Input Requirements:
 
@@ -39,7 +38,7 @@ The raw count AnnData objects need to have the following row or column annotatio
 3) `mean_counts` in adata.var computed by `sc.pp.calculate_qc_metrics` from [scanpy](https://github.com/scverse/scanpy).
 
 The .var_names of the raw count AnnData file should be ENSEMBL gene ids.
-The .X of the raw count AnnData file should be stored in dense matrix format.
+The .X of the raw count AnnData file should be stored in dense matrix format, if SeuratDisk is used for .h5ad/.h5seurat conversion.
 
 
 ## Run instructions:
