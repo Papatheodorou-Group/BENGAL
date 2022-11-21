@@ -1,8 +1,10 @@
 
 Yuyao Song <ysong@ebi.ac.uk>
 
+A docker container is provided here for running SCCAF assessment. We convert the docker container into a singularity container for cluster execuition. 
+
 Pull SCCAF containers as follows:
 
-singularity pull sccaf.sif docker://yysong123/intgpy:sccaf
+`singularity pull sccaf.sif docker://yysong123/intgpy:sccaf`
 
-This container is built for linux/amd64 machines and can be used on lsf clusters
+This container is built for linux/amd64 machines
