@@ -15,14 +15,14 @@ A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integ
 
 ## System requirements
 #### hardware:
-This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other shcedulers via syntax modifications. If the GPU inplementation of scVI is to be used (massively speed up the integration), GPU computing nodes are required and pleasr refer to [scVI](https://scvi-tools.org/). 
+This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other shcedulers by changing job resource syntax. If the GPU inplementation of scVI is to be used (especially for speeding up the integration on large datasets, GPU computing nodes are required and please refer to [scVI](https://scvi-tools.org/).
 
 #### OS:
-Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory this can be run on any linux distribution.
+Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory this can be run on any linux distribution. To run the GPU inplementation of scVI we used Nvidia Tesla V100 GPUs. 
 
 ## Installation:
 
-#### Pull the code for BENGAL
+#### Pull the source code for BENGAL
 `git clone git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
 #### If nextflow or singularity is not installed in your cluster, install them, [go to nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html), [go to singularity documentation](https://singularity-tutorial.github.io/01-installation/)
 
@@ -43,7 +43,7 @@ The .X of the raw count AnnData file should be stored in dense matrix format, if
 
 ## Run instructions:
 
-Perpare the conda environment for .h5ad/.h5seurat conversion. In principle, you can use any program to perform the conversion. Here we used [SeuratDisk](https://github.com/mojaveazure/seurat-disk). SeuratDisk is only available from github and prior installation is required for smoother troubleshoot. Note that the environments for other packages are included in the nextflow program and will be created upon execution. [Mamba](https://github.com/mamba-org/mamba) is recommended as a substitute for conda. 
+Perpare the conda environment for .h5ad/.h5seurat conversion. In principle, you can use any program to perform the conversion. Here we used [SeuratDisk](https://github.com/mojaveazure/seurat-disk). Installation of SeuratDisk from source under the provided environment here is recommended for stable conversion results. Note that the conda environments for other packages are included in the nextflow program and will be created upon execution. [Mamba](https://github.com/mamba-org/mamba) is recommended as a faster substitute for conda. 
 
 First create a conda environment for the conversion:
 
