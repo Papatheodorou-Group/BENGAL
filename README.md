@@ -47,7 +47,7 @@ Perpare the conda environment for .h5ad/.h5seurat conversion. In principle, you 
 
 First create a conda environment for the conversion:
 
-    conda env create -f envs/h5ad_h5seurat_convert.yml
+    conda env create -f envs/hdf5_1820.yml
     conda activate hdf5_1820
     R
 
