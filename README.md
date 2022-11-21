@@ -85,9 +85,10 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 ## Outputs:
 
 1) Concatenated raw count AnnData objects containing cells from all species, in the form of .h5ad files. Objects are concatenated by matching genes between species using gene homology annotation from ENSEMBL.  
-2) Integration result from different algorithms including: [fastMNN](https://bioconductor.org/packages/release/bioc/html/batchelor.html), [harmony](https://github.com/slowkow/harmonypy), [LIGER](https://github.com/welch-lab/liger), [LIGER-UINMF](https://github.com/welch-lab/liger), [scanorama](https://github.com/brianhie/scanorama), [scVI](https://scvi-tools.org/), [SeuratV4CCA](https://satijalab.org/seurat/) and [SeuratV4RPCA](https://satijalab.org/seurat/), in the form of AnnData (.h5ad) or Seurat (.h5seurat) objects, and respective UMAP visualization.
-3) Assessment metrics for each integrated results. There are 4 batch correction metrics and 6 biology conservation metrics. Plots associated for the metrics are also generated for visual inspection. 
-4) Cross-species cell type annotation transfer results with [SCCAF](https://github.com/SCCAF/sccaf).
+2) Integration result from different algorithms including: [fastMNN](https://bioconductor.org/packages/release/bioc/html/batchelor.html), [harmony](https://github.com/slowkow/harmonypy), [LIGER](https://github.com/welch-lab/liger), [LIGER-UINMF](https://github.com/welch-lab/liger), [scanorama](https://github.com/brianhie/scanorama), [scVI](https://scvi-tools.org/), [SeuratV4CCA](https://satijalab.org/seurat/) and [SeuratV4RPCA](https://satijalab.org/seurat/), in the form of AnnData (.h5ad) or Seurat (.h5seurat) objects.
+3) Respective UMAP visualizations with species; batches or cell types color code.
+4) Assessment metrics for each integrated results. There are 4 batch correction metrics and 6 biology conservation metrics. Plots associated with the metrics are also generated for visual inspection. 
+5) Cross-species cell type annotation transfer results with [SCCAF](https://github.com/SCCAF/sccaf).
 
 
 LICENSE: MIT license
