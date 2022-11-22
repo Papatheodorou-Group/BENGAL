@@ -188,7 +188,6 @@ workflow {
     metadata_ch = metadata
     integrated_and_orig_h5ad.view()
 
-    return
     sccaf_assessment(metadata_ch)
     sccaf_projection(integrated_h5ad)
     kBET(integrated_h5ad)
