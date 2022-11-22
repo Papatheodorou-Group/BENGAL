@@ -25,7 +25,7 @@ Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory
 #### Pull the source code of BENGAL:
 `git clone git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
 
-#### If nextflow or singularity is not installed in your cluster, install them, refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/).
+#### If nextflow or singularity is not installed in your cluster, install them. This can take some efforts and it might worth discussing with cluster IT managers. Please refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/). 
 
 
 ## Inputs:
@@ -90,6 +90,7 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 4) Assessment metrics for each integrated results. There are 4 batch correction metrics and 6 biology conservation metrics. Plots associated with the metrics are also generated for visual inspection. 
 5) Cross-species cell type annotation transfer results with [SCCAF](https://github.com/SCCAF/sccaf).
 
+Estimated execution time: ~6h for integrated dataset with 100,000 cells using resources specified in the .nf scripts.
 
 LICENSE: MIT license
 
