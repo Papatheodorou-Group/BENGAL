@@ -9,7 +9,7 @@ A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integ
 
 ## This repo includes:
 
-1) the Nextflow program
+1) the Nextflow pipeline for cross-species integration of scRNA-seq data using various strategies
 2) conda environment configurations and containers
 3) an example config file for running the Nextflow pipeline
 
