@@ -37,6 +37,8 @@ The config file defines project directories and parameters. See example: `config
 
 #### Input Requirements:
 
+*These requirements will be checked in the first process of the pipeline.*
+
 The raw count AnnData objects need to have the following row or column annotations. Note that the exact column name of each key is specified in the config file.
 
 1) a `species_key` in adata.obs to store species identity. Naming should be in line with the short name in ENSEMBL, such as hsapiens; mmusculus; drerio etc.
