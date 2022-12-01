@@ -11,10 +11,8 @@ log.info """
 
 
          Cross-species integration and assessment - nextflow pipeline
-         - Integrate scRNA-seq data from multiple species - this workflow
-         - SCCAF projection on integrated data to assess integration quality
-         - harmony, scanorama, scVI - python based
-         - Seurat CCA, Seurat RPCA, fastMNN, LIGER, LIGER-UINMF - r based
+         - check inout format
+         - concatenate input anndata
          Author: ysong@ebi.ac.uk
          Mar 2022
 
@@ -22,6 +20,27 @@ log.info """
 
          """
          .stripIndent()
+
+
+
+process validate_adata_input {
+
+    cpus 1
+    queue 'research'
+    memory '50GB'
+    conda '/nfs/research/icortes/ysong/anaconda3/envs/scanpy_new'
+    cache 'lenient'
+
+    input:
+    tuple val(basename), path(metadata)
+
+    script:
+    """
+    python ${projectDir}/bin/validate_input.py ${metadata} --batch_key ${params.batch_key} --species_key ${params.species_key} --cluster_key ${params.cluster_key}
+
+    """
+
+}
 
 
 process concat_by_homology {
@@ -90,6 +109,7 @@ workflow {
 
     metadata_ch = Channel.fromPath(params.input_metadata)
                                          .map { file -> tuple(file.baseName, file) }
+    validate_adata_input(metadata_ch)
     concat_by_homology(metadata_ch)
     concat_by_homology_rliger_uinmf(metadata_ch)
 
