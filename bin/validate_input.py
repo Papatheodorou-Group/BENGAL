@@ -35,7 +35,7 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
 
     class adata_var_for_csi(BaseModel):
         mean_counts: pd.Series
-        ensembl_id = constr(regex="^ENS[A-Z]{3}G[0-9]{11}$")
+        ensembl_id = constr(regex="^ENS[A-Z]{3}G[0-9]{11}$") ## ensembl gene ids
         var_names: list[ensembl_id]
 
         class Config:
@@ -52,6 +52,7 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
         print('read in adata')
         ad_now = sc.read_h5ad(meta.iloc[i, 1])
 
+        ## validate required fields in adata.obs
         for key in {species_key, batch_key, cluster_key}:
             try:
                 ad_now.obs[key]
@@ -65,13 +66,17 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
                 except ValidationError as ve:
                     print(ve.json())
                     raise
-
+        ## validate adata.X is a dense matrix in np.array and all positive values (i.e. non-scaled data)
         try:
             adata_X_for_csi(X = ad_now.X)
             print('count matrix test pass for ' + species_now)
         except ValidationError as e:
             print(e.json())
+        else:
+            if not all(ad_now.X.flatten() >= 0):
+                raise ValueError('values in adata.X are not all positive, please make sure raw count matrix is in adata.X')
 
+        ## validate required fields in adata.var, and adata.var_names are ensembl gene ids
         try:
             ad_now.var['mean_counts']
         except KeyError as ke:
