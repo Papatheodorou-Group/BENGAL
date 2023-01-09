@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError, constr
 import pandas as pd
 import numpy as np
 import scanpy as sc
-
+from typing import List
 
 
 @click.command()
@@ -20,7 +20,7 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
     meta = pd.read_csv(input_metadata, sep = '\t', header=None)
 
     class adata_obs_for_csi(BaseModel):
-        species_key : pd.Series
+        species_key: pd.Series
         cluster_key: pd.Series
         batch_key: pd.Series
 
@@ -35,8 +35,8 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
 
     class adata_var_for_csi(BaseModel):
         mean_counts: pd.Series
-        ensembl_id = constr(regex="^ENS[A-Z]{3}G[0-9]{11}$") ## ensembl gene ids
-        var_names: list[ensembl_id]
+        ensembl_id = constr(regex="^ENS[A-Z]{3}G[0-9]{11}$|^ENSG[0-9]{11}$") ## ensembl gene ids
+        var_names: List[ensembl_id]
 
         class Config:
             arbitrary_types_allowed = True
