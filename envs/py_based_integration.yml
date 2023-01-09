@@ -199,4 +199,3 @@ dependencies:
     - scanpy==1.9.1
     - sortedcontainers==2.4.0
     - toolz==0.12.0
-prefix: /nfs/research/icortes/ysong/anaconda3/envs/scanpy_new

@@ -703,4 +703,3 @@ dependencies:
     - torchvision==0.12.0
     - trvaep==0.1.0
     - werkzeug==2.1.2
-prefix: /nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0
