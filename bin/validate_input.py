@@ -35,7 +35,7 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
 
     class adata_var_for_csi(BaseModel):
         mean_counts: pd.Series
-        ensembl_id = constr(regex="^ENS[A-Z]{3}G[0-9]{11}$|^ENSG[0-9]{11}$") ## ensembl gene ids
+        ensembl_id = constr(regex="^ENS[A-Z]{3}[GP][0-9]{11}$|^ENSG[0-9]{11}(\.[0-9]+_[A-Z]+_[A-Z]+)?$") ## ensembl gene ids
         var_names: List[ensembl_id]
 
         class Config:
