@@ -23,9 +23,9 @@ Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory
 ## Installation:
 
 #### Pull the source code of BENGAL:
-`git clone git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
+`git clone -b main git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
 
-#### If nextflow or singularity is not installed in your cluster, install them. This can take some efforts and it might worth discussing with cluster IT managers. Please refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/). 
+**If nextflow or singularity is not installed in your cluster, install them. This can take some efforts and it might worth discussing with cluster IT managers. Please refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/).** 
 
 
 ## Inputs:
@@ -76,11 +76,11 @@ Note, the key for this environment to work is the compatible R, hdf5r and hdf5 v
 
 In a bash shell, check your metadata/config file and run:
 
-1) `conda activate nextflow && nextflow -C config/example.config run concat_by_homology_multiple_species.nf`
+1) `conda activate nextflow && nextflow -C config/example.config run concat_by_homology_multiple_species.nf`. Add flag `-with-trace -with-report report.html` if you want nextflow run stats.
 2) Convert concatenated files from .h5ad to .h5seurat using SeuratDisk (do not remove the .h5ad files). This is for running R-based methods that requires .h5seurat as input. The `envs/h5ad_h5seurat_convert.yml` is a working environment to perform the conversion (see above). 
 3) `nextflow -C config/example.config run cross_species_integration_multiple_species.nf`
 4) Convert methods that output .h5seurat files to .h5ad files (do not remove the .h5seurat files), this is for calculating benchmarking metrics.
-5) `nextflow -C config/example.config run cross_species_assessment_multiple_species.nf`
+5) `nextflow -C config/example.config run cross_species_assessment_multiple_species_individual.nf`
 
 Note: add resume flag `-resume` as appropriate to avoid re-calculation of the same data during multiple runs.
 
