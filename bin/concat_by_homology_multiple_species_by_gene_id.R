@@ -157,7 +157,7 @@ for(species_now in species_list){
 }
 
 many2many_copy <- many2many %>% rowid_to_column("index")
-adata_many2many = AnnData()
+adata_many2many = AnnData(shape = list(0, 0))
 
 while (nrow(many2many_copy) > 0) {
 
@@ -190,7 +190,8 @@ while (nrow(many2many_copy) > 0) {
 }
     adata_add = concat(adatas_many2many, axis = 0L, join = 'inner', merge = 'first', label = 'batch', index_unique = '-')
     adata_add
-      if (dim(adata_many2many)[1] == 0) {
+    
+  if (dim(adata_many2many)[1] == 0) {
     adata_many2many <- adata_add
   } else {
     adata_many2many <- concat(list(adata_many2many, adata_add), axis = 1L, join = "outer", merge = "first")
@@ -227,7 +228,7 @@ for (attr in c("orthology_confidence", "homolog_goc_score", "homolog_wga_coverag
 avail_homo = avail_ordered
 
 many2many_copy_homo <- many2many %>% rowid_to_column("index")
-adata_many2many_homo = AnnData()
+adata_many2many_homo = AnnData(shape = list(0, 0))
 
 while (nrow(many2many_copy_homo) > 0) {
 
