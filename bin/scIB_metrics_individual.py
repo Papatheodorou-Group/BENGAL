@@ -72,6 +72,7 @@ def run_scIB_metrics(
         "harmony": "X_pca_harmony",
         "scanorama": "X_scanorama",
         "scVI": "X_scVI",
+        "scANVI": "X_scANVI",
         "LIGER": "X_iNMF",
         "rligerUINMF": "X_inmf",
         "fastMNN": "X_mnn",
@@ -81,6 +82,7 @@ def run_scIB_metrics(
         "harmony": True,
         "scanorama": True,
         "scVI": True,
+        "scANVI": True,
         "LIGER": True,
         "rligerUINMF": True,
         "fastMNN": True,
@@ -93,6 +95,7 @@ def run_scIB_metrics(
         "harmony": False,
         "scanorama": False,
         "scVI": False,
+        "scANVI": False,
         "LIGER": True,
         "rligerUINMF": True,
         "fastMNN": True,
@@ -136,7 +139,10 @@ def run_scIB_metrics(
         # do nothing
     elif use_embedding is True:
         click.echo("calculate KNN graph from embedding " + embedding_key)
-        sc.pp.neighbors(input_ad, n_neighbors=20, n_pcs=20, use_rep=embedding_key)
+        num_pcs = min(input_ad.obsm[embedding_key].shape[1], 20)
+        if num_pcs < 20:
+            click.echo("using less PCs: " + str(num_pcs))
+        sc.pp.neighbors(input_ad, n_neighbors=20, n_pcs=num_pcs, use_rep=embedding_key)
         # compute knn if use embedding
     else:
         click.echo("use PCA to compute KNN graph")
