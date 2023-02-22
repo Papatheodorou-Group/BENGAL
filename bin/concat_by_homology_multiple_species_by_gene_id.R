@@ -48,9 +48,12 @@ genes_main_chr <- list(
   sscrofa = as.character(c(lapply(seq(1, 18, by = 1), as.character), "X", "Y")),
   mmusculus = as.character(c(lapply(seq(1, 19, by = 1), as.character), "X", "Y")),
   mmulatta = as.character(c(lapply(seq(1, 20, by = 1), as.character), "X", "Y")),
+  mfascicularis = as.character(c(lapply(seq(1, 20, by = 1), as.character), "X")),
   dmelanogaster = c("2L", "2R", "3L", "3R", "4", "X", "Y"),
+  xtropicalis = as.character(c(lapply(seq(1, 10, by = 1), as.character))),
   drerio = as.character(c(lapply(seq(1, 25, by = 1), as.character)))
 )
+
 
 metadata <- read_tsv(input_metadata, col_names = FALSE)
 species_list=metadata[['X1']]
@@ -194,12 +197,13 @@ while (nrow(many2many_copy) > 0) {
   if (dim(adata_many2many)[1] == 0) {
     adata_many2many <- adata_add
   } else {
-    adata_many2many <- concat(list(adata_many2many, adata_add), axis = 1L, join = "outer", merge = "first")
+    adata_many2many <- concat(list(adata_many2many, adata_add), axis = 1L, join = "outer", merge = "first", index_unique = '-')
   }
 
 }
 
-adata_higher_expr = concat(list(adata_one2one, adata_many2many), axis = 1L, join = 'inner', merge = 'first')
+adata_higher_expr = concat(list(adata_one2one, adata_many2many), axis = 1L, join = 'inner', merge = 'first', index_unique = '-')
+
 message("finish building higher expression level")
 adata_higher_expr
 i <- sapply(adata_higher_expr$obs, is.factor)
@@ -274,13 +278,13 @@ while (nrow(many2many_copy_homo) > 0) {
       if (dim(adata_many2many_homo)[1] == 0) {
     adata_many2many_homo <- adata_add
   } else {
-    adata_many2many_homo <- concat(list(adata_many2many_homo, adata_add), axis = 1L, join = "outer", merge = "first")
+    adata_many2many_homo <- concat(list(adata_many2many_homo, adata_add), axis = 1L, join = "outer", merge = "first", index_unique = '-')
   }
 
 }
 
 
-adata_higher_homology_conf = concat(list(adata_one2one, adata_many2many_homo), axis = 1L, join = 'inner', merge = 'first')
+adata_higher_homology_conf = concat(list(adata_one2one, adata_many2many_homo), axis = 1L, join = 'inner', merge = 'first', index_unique = '-')
 i <- sapply(adata_higher_homology_conf$obs, is.factor)
 adata_higher_homology_conf$obs[i] <- lapply(adata_higher_homology_conf$obs[i], as.character)
 
