@@ -6,6 +6,8 @@ import pandas as pd
 import scanpy as sc
 import random
 import scib
+import numpy
+
 
 # set R for kBET
 os.environ[
@@ -22,6 +24,8 @@ os.environ[
 
 ## set seed 
 random.seed(123)
+
+numpy.random.seed(456)
 
 @click.command()
 @click.argument("input_h5ad", type=click.Path(exists=True))
