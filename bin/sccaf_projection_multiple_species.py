@@ -13,7 +13,7 @@ from SCCAF import *
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn import metrics
 
-(@click.command()
+@click.command()
 
 @click.argument("input_h5ad", type=click.Path(exists=True))
 @click.argument("out_projection_h5ads", type=click.Path(exists=False), default=None)
@@ -23,17 +23,30 @@ from sklearn import metrics
 @click.option('--integration_method', type=str, default=None, help="Integration method")
 @click.option('--cluster_key', type=str, default=None, help="Cluster key in species to use to assess label preservation")
 @click.option('--projection_key', type=str, default=None, help="Projection key in species one to use as labels to transfer to species two")
-)
+
 
 def run_sccaf_projection(input_h5ad, species_key,  cluster_key, projection_key, integration_method, out_projection_h5ads, out_figures, out_acc_csv):
 # dictionary for method properties
-    embedding_keys={"harmony": "X_pca_harmony", "scanorama": "X_scanorama", "scVI": "X_scVI", "LIGER": "X_iNMF", "rligerUINMF":"X_inmf", "fastMNN": "X_mnn", "SAMap": "wPCA" }
-    use_embeddings={"harmony": True, "scanorama": True, "scVI": True, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": True , "seuratCCA": False, "seuratRPCA": False, "unintegrated": False}
-    from_h5seurat={"harmony": False, "scanorama": False, "scVI": False, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": False , "seuratCCA": True, "seuratRPCA": True, "unintegrated": False}
+    embedding_keys={"harmony": "X_pca_harmony", "scanorama": "X_scanorama", "scVI": "X_scVI", "LIGER": "X_iNMF", "rligerUINMF":"X_inmf", "fastMNN": "X_mnn", "SAMap": "wPCA", "scANVI": "X_scANVI"}
+    use_embeddings={"harmony": True, "scanorama": True, "scVI": True, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": True , "seuratCCA": False, "seuratRPCA": False, "scANVI": True, "unintegrated": False}
+    from_h5seurat={"harmony": False, "scanorama": False, "scVI": False, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": False , "seuratCCA": True, "seuratRPCA": True, "scANVI": False, "unintegrated": False}
     sc.set_figure_params(dpi_save=200, frameon=False, figsize=(11, 6))
     input_ad = sc.read_h5ad(input_h5ad)
     species_all=input_ad.obs[species_key].astype("category").cat.categories.values
     acc_summary=pd.DataFrame()
+     
+    if integration_method == 'unintegrated':
+
+    ## raw concatinated data needs preprocessing
+        sc.pp.normalize_total(input_ad, target_sum=1e4)
+        sc.pp.log1p(input_ad)
+        sc.pp.highly_variable_genes(input_ad, min_mean=0.0125, max_mean=3, min_disp=0.5)
+        input_ad.raw = input_ad
+        sc.pp.scale(input_ad, max_value=10)
+        sc.tl.pca(input_ad, svd_solver='arpack')
+        sc.pp.neighbors(input_ad, n_neighbors=10, n_pcs=40)
+        sc.tl.umap(input_ad, min_dist=0.3)
+
     # register color in .uns
     sc.pl.umap(input_ad, color = cluster_key)
     sc.pl.umap(input_ad, color = projection_key)
@@ -265,11 +278,11 @@ def run_sccaf_projection(input_h5ad, species_key,  cluster_key, projection_key, 
                 tbl4['adj_rand_score'] = ars_2
                 tbl4['pct_cell_type_kept'] = pct_2
 
-        acc_summary = pd.concat([acc_summary, tbl1, tbl2, tbl3, tbl4], axis=0, ignore_index=True)
-        adata_out = ad.concat([adx1, adx2], join='inner', merge='same', label='sccaf_projection', keys=[species_one+"_from_"+species_one+"_"+species_two+"_"+integration_method, species_two+"_from_"+species_one+"_"+species_two+"_"+integration_method])
+            acc_summary = pd.concat([acc_summary, tbl1, tbl2, tbl3, tbl4], axis=0, ignore_index=True)
+            adata_out = ad.concat([adx1, adx2], join='inner', merge='same', label='sccaf_projection', keys=[species_one+"_from_"+species_one+"_"+species_two+"_"+integration_method, species_two+"_from_"+species_one+"_"+species_two+"_"+integration_method])
                 
-        adata_out.write(out_projection_h5ads+"_"+species_one+"_"+species_two+".h5ad", compression = 'gzip')
-        click.echo("finish projection between "+species_one+" and "+species_two)
+            adata_out.write(out_projection_h5ads+"_"+species_one+"_"+species_two+".h5ad", compression = 'gzip')
+            click.echo("finish projection between "+species_one+" and "+species_two)
 
     click.echo("write acc summary for all")
     acc_summary.to_csv(out_acc_csv, index=False)
