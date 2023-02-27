@@ -148,6 +148,7 @@ for(species_now in names(adatas)){
 
 message("finish building one2one")
 
+
 message("start building many2many")
 message("start higher expression level")
 
@@ -170,14 +171,12 @@ adata_many2many = AnnData(shape = list(0, 0))
 
 adatas_many2many_all = list()
 while (nrow(many2many_copy) > 0) {
-    if(nrow(many2many_copy) < 6000) message(nrow(many2many_copy))
+
+    if(nrow(many2many_copy) < 6000 & nrow(many2many_copy) > 5990) message(nrow(many2many_copy))
     
-    if(nrow(many2many_copy) < 4000) message(nrow(many2many_copy))
+    if(nrow(many2many_copy) < 4000 & nrow(many2many_copy) > 3990) message(nrow(many2many_copy))
 
-    if(nrow(many2many_copy) < 2000) message(nrow(many2many_copy))
-
-    if(nrow(many2many_copy) < 1000) message(nrow(many2many_copy))
-
+    if(nrow(many2many_copy) < 1000 & nrow(many2many_copy) > 990) message(nrow(many2many_copy))
 
 
     dd <- many2many_copy %>%
@@ -217,6 +216,8 @@ while (nrow(many2many_copy) > 0) {
   }
 
 }
+
+  rm(adatas_many2many)
 }
 
 
@@ -228,6 +229,8 @@ for(species_now in names(adatas)){
     message(species_now)
 
     }
+
+rm(adatas_many2many_all)
 
 adatas_one2one_higher_expr_uinmf = list()
 
@@ -249,6 +252,11 @@ for(species_now in names(adatas)){
 
     }
 message("finish building higher expression level")
+
+rm(adatas_one2one_and_many_expr)
+rm(adatas_one2one_higher_expr_uinmf)
+
+
 message("start higher homology confidence")
 
 ## available attributes to indicate confidence of homology
@@ -273,12 +281,13 @@ adata_many2many_homo = AnnData(shape = list(0, 0))
 
 while (nrow(many2many_copy_homo) > 0) {
     
-    if(nrow(many2many_copy_homo) < 6000) message(nrow(many2many_copy_homo))
-    if(nrow(many2many_copy_homo) < 4000) message(nrow(many2many_copy_homo))
 
-    if(nrow(many2many_copy_homo) < 2000) message(nrow(many2many_copy_homo))
+    if(nrow(many2many_copy_homo) < 6000 & nrow(many2many_copy_homo) > 5990) message(nrow(many2many_copy_homo))
 
-    if(nrow(many2many_copy_homo) < 1000) message(nrow(many2many_copy_homo))
+    if(nrow(many2many_copy_homo) < 4000 & nrow(many2many_copy_homo) > 3990) message(nrow(many2many_copy_homo))
+
+    if(nrow(many2many_copy_homo) < 1000 & nrow(many2many_copy_homo) > 990) message(nrow(many2many_copy_homo))
+
 
     dd <- many2many_copy_homo %>%
         filter(get(paste0(species_1, "_homolog_ensembl_gene"))  == levels(factor(many2many_copy_homo[[paste0(species_1, "_homolog_ensembl_gene")]]))[1])
@@ -323,6 +332,8 @@ while (nrow(many2many_copy_homo) > 0) {
     adatas_many2many_homo_all[[species_now]] <- concat(list(adatas_many2many_homo_all[[species_now]], adatas_many2many_homo[[species_now]]), axis = 1L, join = "outer", merge = "first", index_unique = '-')
   }
 }
+  rm(adatas_many2many_homo)
+
 }
 adatas_one2one_and_many_homo = list()
 for(species_now in names(adatas)){
@@ -331,6 +342,10 @@ for(species_now in names(adatas)){
     message(species_now)
 
     }
+
+rm(adatas_many2many_homo_all)
+
+
 adatas_one2one_higher_homo_uinmf = list()
 
 for(species_now in names(adatas)){
@@ -342,7 +357,7 @@ for(species_now in names(adatas)){
 
     i <- sapply(adatas_one2one_higher_homo_uinmf[[species_now]]$obs, is.factor)
     adatas_one2one_higher_homo_uinmf[[species_now]]$obs[i] <- lapply(adatas_one2one_higher_homo_uinmf[[species_now]]$obs[i], as.character)
-    j <- sapply(adatas_one2one_higher_expr_uinmf[[species_now]]$var, is.factor)
+    j <- sapply(adatas_one2one_higher_homo_uinmf[[species_now]]$var, is.factor)
     adatas_one2one_higher_homo_uinmf[[species_now]]$var[j] <- lapply(adatas_one2one_higher_homo_uinmf[[species_now]]$var[j], as.character)
 
     write_h5ad(anndata = adatas_one2one_higher_homo_uinmf[[species_now]],
@@ -351,6 +366,12 @@ for(species_now in names(adatas)){
 
     }
 message("finish higher homology confidence")
+
+rm(adatas_one2one_and_many_homo)
+rm(adatas_one2one_higher_homo_uinmf)
+
+
+
 metadata = data.frame('species' = names(adatas))
 metadata$one2one_only = paste0(out_dir, "/", metadata$species, "_one2one_only_ligerUINMF.h5seurat")
 metadata$many_higher_expr = paste0(out_dir, "/", metadata$species, "_many_higher_expr_ligerUINMF.h5seurat")
