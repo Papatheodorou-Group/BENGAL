@@ -179,7 +179,7 @@ def run_scIB_metrics(
     click.echo("PC regression")
 
     output_integrated.loc["PCR", "value"] = scib.metrics.pc_regression(
-        input_ad.obsm[embedding_key], covariate=orig_ad.obs[species_key], n_comps=50
+        input_ad.obsm[embedding_key], covariate=input_ad.obs[species_key], n_comps=50
     )
     output_orig.loc["PCR", "value"] = scib.metrics.pc_regression(
         orig_ad.obsm["X_pca"],
@@ -231,7 +231,7 @@ def run_scIB_metrics(
         batch_key,
         type_="embed",
         use_rep=embedding_key,
-        k0=90,
+        k0=50,
         subsample=None,
         n_cores=num_cores,
         scale=True,
@@ -242,7 +242,7 @@ def run_scIB_metrics(
         orig_ad,
         batch_key,
         type_="full",
-        k0=90,
+        k0=50,
         subsample=None,
         n_cores=num_cores,
         scale=True,
@@ -279,7 +279,7 @@ def run_scIB_metrics(
         label_key=cluster_key,
         type_="embed",
         use_rep=embedding_key,
-        k0=90,
+        k0=50,
         subsample=None,
         scale=True,
         n_cores=num_cores,
@@ -290,7 +290,7 @@ def run_scIB_metrics(
         orig_ad,
         label_key=cluster_key,
         type_="full",
-        k0=90,
+        k0=50,
         subsample=None,
         scale=True,
         n_cores=num_cores,
