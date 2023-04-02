@@ -10,21 +10,15 @@ import numpy
 
 
 # set R for kBET
-os.environ[
-    "R_HOME"
-] = "/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R"
-os.environ["PATH"] = (
-    "/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/bin:"
-    + os.environ["PATH"]
-)
-os.environ[
-    "R_LIBS_USER"
-] = "/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R/library"
+import os
+os.environ['R_HOME'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R'
+os.environ['PATH'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/bin:' + os.environ['PATH']
+os.environ['R_LIBS_USER'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R/library'
+os.environ['R_LIBS'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R/library'
 
 
 ## set seed 
 random.seed(123)
-
 numpy.random.seed(456)
 
 @click.command()
@@ -255,8 +249,7 @@ def run_scIB_metrics(
         input_ad,
         batch_key=batch_key,
         label_key=cluster_key,
-        type_="embed",
-        embed=embedding_key,
+        type_="knn", ## for equal treatment of SAMap and other methods
         scaled=True,
         return_df=False,
         verbose=True,
