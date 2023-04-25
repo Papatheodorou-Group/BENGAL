@@ -15,15 +15,15 @@ A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integ
 
 ## System requirements
 #### Hardware:
-This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other schedulers by changing job resource syntax in the nextflow script. If the GPU inplementation of scVI is to be used (beneficial for speeding up the integration on large datasets), GPU computing nodes are required, please refer to [scVI-tools site](https://scvi-tools.org/) for respective setups.
+This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other schedulers by changing job resource syntax in the nextflow script. If the GPU inplementation of scVI/scANVI is to be used (beneficial for speeding up the integration on large datasets), GPU computing nodes are required, please refer to [scVI-tools site](https://scvi-tools.org/) for respective setups.
 
 #### OS:
-Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory this can be run on any linux distribution. To run the GPU inplementation of scVI we used Nvidia Tesla V100 GPUs. 
+Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory this can be run on any linux distribution. To run the GPU inplementation of scVI/scANVI we used Nvidia Tesla V100 GPUs. 
 
 ## Installation:
 
-#### Pull the source code of BENGAL:
-`git clone -b main git@github.com:Functional-Genomics/CrossSpeciesIntegration.git`
+#### Clone the source code of BENGAL:
+`git clone -b main git@github.com:Functional-Genomics/BENGAL.git`
 
 **If nextflow or singularity is not installed in your cluster, install them. This can take some efforts and it might worth discussing with cluster IT managers. Please refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/).** 
 
@@ -74,7 +74,7 @@ Note, the key for this environment to work is the compatible R, hdf5r and hdf5 v
 
 ### To run BENGAL:
 
-In a bash shell, check your metadata/config file and run:
+In a bash shell, check your metadata/config files are set and run:
 
 1) `conda activate nextflow && nextflow -C config/example.config run concat_by_homology_multiple_species.nf`. Add flag `-with-trace -with-report report.html` if you want nextflow run stats.
 2) Convert concatenated files from .h5ad to .h5seurat using SeuratDisk (do not remove the .h5ad files). This is for running R-based methods that requires .h5seurat as input. The `envs/h5ad_h5seurat_convert.yml` is a working environment to perform the conversion (see above). 
