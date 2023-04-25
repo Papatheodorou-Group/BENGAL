@@ -69,7 +69,7 @@ process scanorama_integration {
 }
 
 
-// scVI use gpu version
+// scVI uses GPU
 process scvi_integration {
 
     publishDir "${params.results}/results/scVI/cross_species/integrated_h5ad", mode: 'copy'
@@ -93,6 +93,31 @@ process scvi_integration {
     ${file} ${baseName}_scVI_integrated.h5ad ${baseName}_scVI_integrated_UMAP.png
     """
 }
+// scANVI uses GPU
+process scanvi_integration {
+
+    publishDir "${params.results}/results/scANVI/cross_species/integrated_h5ad", mode: 'copy'
+    queue 'gpu'
+    clusterOptions ' -gpu "num=2:j_exclusive=no" -P gpu -n 4 '
+    memory '50GB'
+    conda "${projectDir}/envs/scVI_integration.yml"
+    cache 'lenient'
+
+    input:
+    tuple val(baseName), path(file)
+
+    output:
+    path "${baseName}_scANVI_integrated.h5ad", emit: scanvi_cross_species_h5ad_ch
+    path "${baseName}_scANVI_integrated_UMAP.png", emit: scanvi_cross_species_umap_ch
+
+    script:
+    """
+    python ${projectDir}/bin/scANVI_integration.py \
+    --batch_key ${params.batch_key} --species_key ${params.species_key} --cluster_key ${params.cluster_key} \
+    ${file} ${baseName}_scANVI_integrated.h5ad ${baseName}_scANVI_integrated_UMAP.png
+    """
+}
+
 
 
 process seurat_CCA_integration{
@@ -228,6 +253,7 @@ workflow {
     harmony_integration(concatenated_h5ad)
     scanorama_integration(concatenated_h5ad)
     scvi_integration(concatenated_h5ad)
+    scanvi_integration(concatenated_h5ad)
 
     concatenated_h5seurat = all_homology_h5seurat_mapped_ch
     seurat_CCA_integration(concatenated_h5seurat)
