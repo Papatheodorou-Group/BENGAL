@@ -1,4 +1,4 @@
-## BENGAL: BENchmarking inteGration strAtegies for cross-species anaLysis of single-cell transcriptomics data ##
+## BENGAL: BENchmarking strateGies for cross-species integrAtion of singLe-cell RNA sequencing data ##
 
 
 Author&maintainer: Yuyao Song <ysong@ebi.ac.uk>
