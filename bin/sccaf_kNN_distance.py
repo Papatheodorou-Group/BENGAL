@@ -88,6 +88,17 @@ def anndata_knn_acc(input_h5ad, cluster_key, out_acc_csv, integration_method, n_
         sc.tl.pca(input_ad, svd_solver='arpack')
         sc.pp.neighbors(input_ad, n_neighbors=n_neighbors, n_pcs=40, use_rep="X_pca")
         embedding_key = "X_pca"
+    elif integration_method == 'unintegrated':
+        click.echo("use PCA to compute KNN graph for unintegrated data")
+        
+        sc.pp.normalize_total(input_ad, target_sum=1e4)
+        sc.pp.log1p(input_ad)
+        sc.pp.highly_variable_genes(input_ad, min_mean=0.0125, max_mean=3, min_disp=0.5)
+        sc.pp.scale(input_ad, max_value=10)
+        sc.tl.pca(input_ad, svd_solver="arpack")
+        sc.pp.neighbors(input_ad, n_neighbors=n_neighbors, n_pcs=40, use_rep="X_pca")
+        embedding_key = "X_pca"
+        
     else:
         click.echo("use PCA to compute KNN graph for corrected counts output")
         sc.pp.scale(input_ad, max_value=10)
