@@ -7,6 +7,8 @@ A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integ
 
 [check our preprint](https://www.biorxiv.org/content/10.1101/2022.09.27.509674).
 
+[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419)
+
 ## This repo includes:
 
 1) the Nextflow pipeline for cross-species integration of scRNA-seq data using various strategies
