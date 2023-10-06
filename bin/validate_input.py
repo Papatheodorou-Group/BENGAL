@@ -1,12 +1,14 @@
 #/usr/bin/env python3
 
+# ysong update pydantic to v2 for containerization Oct 2023
+
 import click
-from pydantic import BaseModel, ValidationError, constr
+from pydantic import StringConstraints, Field, ConfigDict, BaseModel, ValidationError
 import pandas as pd
 import numpy as np
 import scanpy as sc
 from typing import List
-
+from typing_extensions import Annotated
 
 @click.command()
 @click.argument("input_metadata", type=click.Path(exists=True))
@@ -23,23 +25,16 @@ def validate_adata_input(input_metadata, batch_key, cluster_key, species_key):
         species_key: pd.Series
         cluster_key: pd.Series
         batch_key: pd.Series
-
-        class Config:
-            arbitrary_types_allowed = True
+        model_config = ConfigDict(arbitrary_types_allowed=True)
 
     class adata_X_for_csi(BaseModel):
         X: np.ndarray
-
-        class Config:
-            arbitrary_types_allowed = True
+        model_config = ConfigDict(arbitrary_types_allowed=True)
 
     class adata_var_for_csi(BaseModel):
         mean_counts: pd.Series
-        ensembl_id = constr(regex="^ENS[A-Z]{3}[GP][0-9]{11}$|^ENSG[0-9]{11}(\.[0-9]+_[A-Z]+_[A-Z]+)?$") ## ensembl gene ids
-        var_names: List[ensembl_id]
-
-        class Config:
-            arbitrary_types_allowed = True
+        var_names: List[Annotated[str, Field(pattern="^ENS[A-Z]{3}[GP][0-9]{11}$|^ENSG[0-9]{11}(\.[0-9]+_[A-Z]+_[A-Z]+)?$")]] # require ensembl gene id as var_names 
+        model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ## validate
 
