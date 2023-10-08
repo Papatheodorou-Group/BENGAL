@@ -62,9 +62,7 @@ process concat_by_homology {
 
     output:
 
-    path "${basename}_one2one_only.h5ad"
-    path "${basename}_many_higher_expr.h5ad"
-    path "${basename}_many_higher_homology_conf.h5ad"
+    path "*.h5ad", emit: concat_h5ad
     path "${basename}_homology_tbl.csv"
 
 
@@ -89,8 +87,8 @@ process concat_by_homology_rliger_uinmf {
 
     output:
     path "homology_tbl.csv"
-    path "${basename}_liger.tsv"
-    //path "*_ligerUINMF.h5ad"
+    path "${basename}_liger.tsv", emit: concat_h5ad_rliger_paths
+    //path "*.h5ad", emit: concat_h5ad_rliger
 
     script:
     """
@@ -102,16 +100,69 @@ process concat_by_homology_rliger_uinmf {
     """
 }
 
+process convert_format_h5ad {
+
+    label 'convert'
+    label 'regular_resource'
+    conda "${projectDir}/envs/sceasy.yml"
+
+    publishDir "${params.results}/results/h5ad_homology_concat", mode: 'copy'
+
+    input: 
+    tuple val(basename), path(h5ad_concat)
+
+    output:
+    path "*.rds"
+
+    script:
+    """
+    Rscript ${projectDir}/bin/convert_format.R \
+    -i ${h5ad_concat} -o ${basename}.rds -t anndata_to_seurat \
+    --conda_path ${params.sceasy_conda}
+
+    """
+
+
+}
+
+process convert_format_rliger_uinmf {
+
+    label 'convert'
+    label 'regular_resource'
+    conda "${projectDir}/envs/sceasy.yml"
+
+    publishDir "${params.results}/results/rligerUINMF/h5ad_homology_concat", mode: 'copy'
+
+    input: 
+    tuple val(basename), path(h5ad_species)
+
+    output:
+    path "*.rds"
+
+    script:
+    """
+    Rscript ${projectDir}/bin/convert_format.R \
+    -i ${h5ad_species} -o ${basename}.rds -t anndata_to_seurat \
+    --conda_path ${params.sceasy_conda}
+
+    """
+
+
+}
 
 
 workflow {
 
     metadata_ch = Channel.fromPath(params.input_metadata)
                                          .map { file -> tuple(file.baseName, file) }
-    metadata_ch.view()
+    //metadata_ch.view()
     validate_adata_input(metadata_ch)
     concat_by_homology(metadata_ch)
     concat_by_homology_rliger_uinmf(metadata_ch)
 
+    concat_h5ad_ch = concat_by_homology.out.concat_h5ad.flatten().filter( ~/.*h5ad$/ ).map { file -> tuple(file.baseName, file) }
+    convert_format_h5ad(concat_h5ad_ch)
+    concat_rliger_ch = Channel.fromPath("${params.results}/results/rligerUINMF/h5ad_homology_concat/*.h5ad").map { file -> tuple(file.baseName, file) }.view()
+    convert_format_rliger_uinmf(concat_rliger_ch)
 
 }

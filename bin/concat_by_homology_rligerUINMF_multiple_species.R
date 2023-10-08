@@ -377,7 +377,7 @@ rm(adatas_one2one_higher_homo_uinmf)
 
 
 metadata = data.frame('species' = names(adatas))
-metadata$one2one_only = paste0(out_dir, "/", metadata$species, "_one2one_only_rligerUINMF.rds")
-metadata$many_higher_expr = paste0(out_dir, "/", metadata$species, "_many_higher_expr_rligerUINMF.rds")
-metadata$many_higher_homology_conf = paste0(out_dir, "/", metadata$species, "_many_higher_homology_conf_rligerUINMF.rds")
+metadata$one2one_only = paste0(out_dir, "/", metadata$species, "_one2one_only_ligerUINMF.rds")
+metadata$many_higher_expr = paste0(out_dir, "/", metadata$species, "_many_higher_expr_ligerUINMF.rds")
+metadata$many_higher_homology_conf = paste0(out_dir, "/", metadata$species, "_many_higher_homology_conf_ligerUINMF.rds")
 write_tsv(metadata, file = metadata_output, col_names = TRUE)

@@ -1,9 +1,6 @@
 # /usr/bin/env R
 
-library(sceasy)
-library(anndata)
 library(optparse)
-library(SeuratDisk)
 
 
 option_list <- list(
@@ -18,6 +15,10 @@ option_list <- list(
   make_option(c("-t", "--type"),
     type = "character", default = NULL,
     help = "Conversion type, choose between anndata_to_seurat or seurat_to_anndata"
+  ),
+    make_option(c("--conda_path"),
+    type = "character", default = NULL,
+    help = "Conda for python executable to use for reticulate, important to match the prepared conda env!"
   )
 )
 
@@ -27,23 +28,28 @@ opt <- parse_args(OptionParser(option_list = option_list))
 input_file <- opt$input_file
 output_file <- opt$output_file
 type <- opt$type
+conda_path <- opt$conda_path
+
+# set sys env before loading reticulate
+Sys.setenv(RETICULATE_PYTHON=paste0(conda_path, "/bin/python3"))
+Sys.setenv(RETICULATE_PYTHON_ENV=conda_path)
+
+library(reticulate)
+library(sceasy)
+library(anndata)
 
 
 if(type == 'anndata_to_seurat'){
 
     message(paste0("from anndata to seurat, input: ", input_file))
 
-    obj <- anndata::read_h5ad(input_file)
-
-    sceasy::convertFormat(obj, from="anndata", to="seurat",
+    sceasy::convertFormat(input_file, from="anndata", to="seurat",
                        outFile=output_file)
 } else if (type == 'seurat_to_anndata'){
 
     message(paste0("from seurat to anndata, input: ", input_file))
     
-    obj <- readRDS(input_file)
-
-    sceasy::convertFormat(obj, from="seurat", to="anndata",
+    sceasy::convertFormat(input_file, from="seurat", to="anndata",
                        outFile=output_file)
 
 } else {
