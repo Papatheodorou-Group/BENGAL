@@ -1,19 +1,17 @@
 # /usr/bin/env R
 
 library(Seurat)
-library(anndata)
-library(tidyverse)
 library(optparse)
-library(SeuratDisk)
+
 
 option_list <- list(
-  make_option(c("-i", "--input_h5Seurat"),
+  make_option(c("-i", "--input_rds"),
     type = "character", default = NULL,
-    help = "Path to input preprocessed h5Seurat file"
+    help = "Path to input preprocessed rds file"
   ),
-  make_option(c("-o", "--out_h5Seurat"),
+  make_option(c("-o", "--out_rds"),
     type = "character", default = NULL,
-    help = "Output Seurat CCA integrated h5Seurat file"
+    help = "Output Seurat CCA integrated rds file"
   ),
   make_option(c("-p", "--out_UMAP"),
     type = "character", default = NULL,
@@ -36,18 +34,18 @@ option_list <- list(
 # parse input
 opt <- parse_args(OptionParser(option_list = option_list))
 
-input_h5Seurat <- opt$input_h5Seurat
-out_h5Seurat <- opt$out_h5Seurat
+input_rds <- opt$input_rds
+out_rds <- opt$out_rds
 out_UMAP <- opt$out_UMAP
 batch_key <- opt$batch_key
 species_key <- opt$species_key
 cluster_key <- opt$cluster_key
 
-## create Seurat object via h5Seurat
+## create Seurat object via rds
 
-# Convert(input_h5ad, dest = "h5seurat", overwrite = TRUE)
-# input_h5Seurat <- gsub("h5ad", "h5Seurat", input_h5ad)
-input <- LoadH5Seurat(input_h5Seurat)
+# Convert(input_h5ad, dest = "rds", overwrite = TRUE)
+# input_rds <- gsub("h5ad", "rds", input_h5ad)
+input <- readRDS(input_rds)
 
 object.list <- SplitObject(input, split.by = batch_key)
 
@@ -71,10 +69,8 @@ input.combined <- RunUMAP(input.combined, reduction = "pca", dims = 1:30, n_neig
 input.combined <- FindNeighbors(input.combined, reduction = "pca", dims = 1:30)
 input.combined <- FindClusters(input.combined, resolution = 0.4)
 
-SaveH5Seurat(input.combined,
-  filename = out_h5Seurat,
-  assay = "integrated",
-  overwrite = TRUE
+saveRDS(input.combined,
+  file = out_rds
 )
 
 pdf(out_UMAP, height = 6, width = 10)

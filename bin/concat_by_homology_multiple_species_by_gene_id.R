@@ -5,10 +5,16 @@
 ## ysong@ebi.ac.uk for CrossSpeciesIntegration pipeline
 #########
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
 
 library(optparse)
 library(anndata)
-library(tidyverse)
+library(dplyr)
+library(purrr)
+library(readr)
+library(magrittr)
+library(tibble)
 library(biomaRt)
 
 option_list <- list(
@@ -186,7 +192,7 @@ while (nrow(many2many_copy) > 0) {
         }
 
     new_name = adatas_many2many[[species_1]]$var_names
-    message(new_name)
+    #message(new_name)
     for(species_now in species_list[-1]){
     adatas_many2many[[species_now]]$var[[paste0(species_1, "_homolog_ensembl_gene")]] = new_name
     rownames(adatas_many2many[[species_now]]$var) = new_name
@@ -266,7 +272,7 @@ while (nrow(many2many_copy_homo) > 0) {
 
 
     new_name = adatas_many2many_homo[[species_1]]$var_names
-    message(new_name)
+    #message(new_name)
     for(species_now in species_list[-1]){
 
     adatas_many2many_homo[[species_now]]$var[[paste0(species_1, "_homolog_ensembl_gene")]] = new_name

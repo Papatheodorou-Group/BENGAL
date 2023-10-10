@@ -5,10 +5,16 @@
 ## ysong@ebi.ac.uk for CrossSpeciesIntegration pipeline
 #########
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
 
 library(optparse)
 library(anndata)
-library(tidyverse)
+library(dplyr)
+library(purrr)
+library(readr)
+library(magrittr)
+library(tibble)
 library(biomaRt)
 
 option_list <- list(
@@ -37,7 +43,7 @@ out_dir <- opt$out_dir
 metadata_output <- opt$metadata_output
 
 
-message("create h5seurat object for rliger")
+message("create seurat objects for rliger")
 
 
 genes_main_chr <- list(
@@ -201,7 +207,7 @@ while (nrow(many2many_copy) > 0) {
         }
 
     new_name = adatas_many2many[[species_1]]$var_names
-    message(new_name)
+    #message(new_name)
 
     for(species_now in species_list[-1]){
     adatas_many2many[[species_now]]$var[[paste0(species_1, "_homolog_ensembl_gene")]] = new_name
@@ -319,7 +325,7 @@ while (nrow(many2many_copy_homo) > 0) {
 }
 
     new_name = adatas_many2many_homo[[species_1]]$var_names
-    message(new_name)
+    #message(new_name)
     for(species_now in species_list[-1]){
     adatas_many2many_homo[[species_now]]$var[[paste0(species_1, "_homolog_ensembl_gene")]] = new_name
     rownames(adatas_many2many_homo[[species_now]]$var) = new_name
@@ -373,7 +379,7 @@ rm(adatas_one2one_higher_homo_uinmf)
 
 
 metadata = data.frame('species' = names(adatas))
-metadata$one2one_only = paste0(out_dir, "/", metadata$species, "_one2one_only_ligerUINMF.h5seurat")
-metadata$many_higher_expr = paste0(out_dir, "/", metadata$species, "_many_higher_expr_ligerUINMF.h5seurat")
-metadata$many_higher_homology_conf = paste0(out_dir, "/", metadata$species, "_many_higher_homology_conf_ligerUINMF.h5seurat")
+metadata$one2one_only = paste0(out_dir, "/", metadata$species, "_one2one_only_ligerUINMF.rds")
+metadata$many_higher_expr = paste0(out_dir, "/", metadata$species, "_many_higher_expr_ligerUINMF.rds")
+metadata$many_higher_homology_conf = paste0(out_dir, "/", metadata$species, "_many_higher_homology_conf_ligerUINMF.rds")
 write_tsv(metadata, file = metadata_output, col_names = TRUE)

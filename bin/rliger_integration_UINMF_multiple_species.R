@@ -1,16 +1,18 @@
 # /usr/bin/env R
 
-library(anndata)
-library(tidyverse)
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
 library(optparse)
 library(rliger)
 library(scCustomize) # liger to seurat function keep_metadata
 library(SeuratDisk)
 
+
 option_list <- list(
   make_option(c("--metadata"),
     type = "character", default = NULL,
-    help = "Path to a file indicate species-h5ad mapping, tab-seperated"
+    help = "Path to a file indicate species-rds mapping, tab-seperated"
   ),
   make_option(c("--basename"),
       type = "character", default = NULL,
@@ -18,7 +20,7 @@ option_list <- list(
   ),
   make_option(c("--out_dir"),
     type = "character", default = NULL,
-    help = "output dir to write h5ad files"
+    help = "output dir to write rds files"
   ),
   make_option(c("--cluster_key"),
     type = "character", default = NULL,
@@ -33,7 +35,8 @@ out_dir <- opt$out_dir
 cluster_key <- opt$cluster_key
 
 
-metadata = read_tsv(metadata_path) %>% as.data.frame()
+metadata = read.table(metadata_path, sep = '\t', header=TRUE)
+metadata = as.data.frame(metadata)
 
 for(type in colnames(metadata)[-1]){
 
@@ -42,7 +45,7 @@ message(type)
 obj_list = list()
 for(i in seq(1, nrow(metadata))){
 
-    obj_list[[i]] = LoadH5Seurat(metadata[i, type])
+    obj_list[[i]] = readRDS(metadata[i, type])
 }
 
 liger <- seuratToLiger(obj_list, remove.missing = FALSE, renormalize = FALSE, names = metadata$species)
@@ -94,9 +97,8 @@ dev.off()
 
 message("save seurat object")
 
-SaveH5Seurat(seurat_obj,
-  filename = paste0(out_dir,"/", basename, "_", type, "_rligerUINMF_integrated.h5seurat"),
-  overwrite = TRUE
+saveRDS(seurat_obj,
+  file = paste0(out_dir,"/", basename, "_", type, "_rligerUINMF_integrated.rds")
 )
 
 message(paste0("finish", type))

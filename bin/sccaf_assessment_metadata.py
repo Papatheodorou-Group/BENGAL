@@ -1,12 +1,15 @@
 #/usr/bin/env python3
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
+
 import click
 import matplotlib.pyplot as plt
 from sklearn import metrics
 import pandas as pd
 import scanpy as sc
 from SCCAF import *
-
 
 @click.command()
 @click.argument("input_metadata", type=click.Path(exists=True))

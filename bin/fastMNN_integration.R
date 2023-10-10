@@ -1,21 +1,20 @@
 # /usr/bin/env R
 
-library(anndata)
-library(tidyverse)
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
 library(optparse)
-library(rliger)
 library(Seurat)
-library(SeuratDisk)
 library(SeuratWrappers)
 
 option_list <- list(
-  make_option(c("-i", "--input_h5Seurat"),
+  make_option(c("-i", "--input_rds"),
     type = "character", default = NULL,
-    help = "Path to input preprocessed h5Seurat file"
+    help = "Path to input preprocessed rds file"
   ),
-  make_option(c("-o", "--out_h5Seurat"),
+  make_option(c("-o", "--out_rds"),
     type = "character", default = NULL,
-    help = "Output fastMNN from Seurat wrappers integrated h5Seurat file"
+    help = "Output fastMNN from Seurat wrappers integrated rds file"
   ),
   make_option(c("-p", "--out_UMAP"),
     type = "character", default = NULL,
@@ -38,18 +37,18 @@ option_list <- list(
 # parse input
 opt <- parse_args(OptionParser(option_list = option_list))
 
-input_h5Seurat <- opt$input_h5Seurat
-out_h5Seurat <- opt$out_h5Seurat
+input_rds <- opt$input_rds
+out_rds <- opt$out_rds
 out_UMAP <- opt$out_UMAP
 batch_key <- opt$batch_key
 species_key <- opt$species_key
 cluster_key <- opt$cluster_key
 
-## create Seurat object via h5Seurat
+## create Seurat object via rds
 
-# Convert(input_h5ad, dest = "h5seurat", overwrite = TRUE)
-# input_h5Seurat <- gsub("h5ad", "h5Seurat", input_h5ad)
-obj <- LoadH5Seurat(input_h5Seurat)
+# Convert(input_h5ad, dest = "rds", overwrite = TRUE)
+# input_rds <- gsub("h5ad", "rds", input_h5ad)
+obj <- readRDS(input_rds)
 
 obj <- NormalizeData(obj)
 obj <- FindVariableFeatures(obj)
@@ -64,14 +63,10 @@ obj <- FindClusters(obj, resolution = 0.4)
 i <- sapply(obj@meta.data, is.factor)
 obj@meta.data[i] <- lapply(obj@meta.data[i], as.character)
 
-SaveH5Seurat(obj,
-  assay = "mnn.reconstructed",
-  filename = out_h5Seurat,
-  overwrite = TRUE
+saveRDS(obj,
+  file= out_rds,
 )
 
-Convert(out_h5Seurat, "h5ad", overwrite = TRUE)
-# fastMNN embedding will be in adata.X after convert to adata object
 
 pdf(out_UMAP, height = 6, width = 10)
 DimPlot(obj, reduction = "umap", group.by = species_key, shuffle = TRUE, label = TRUE)
