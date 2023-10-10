@@ -105,7 +105,6 @@ process convert_format_h5ad {
 
     label 'convert'
     label 'regular_resource'
-    conda "${projectDir}/envs/sceasy.yml"
 
     publishDir "${params.results}/results/h5ad_homology_concat", mode: 'copy'
 
@@ -130,7 +129,6 @@ process convert_format_rliger_uinmf {
 
     label 'convert'
     label 'regular_resource'
-    conda "${projectDir}/envs/sceasy.yml"
 
     publishDir "${params.results}/results/rligerUINMF/h5ad_homology_concat", mode: 'copy'
 
