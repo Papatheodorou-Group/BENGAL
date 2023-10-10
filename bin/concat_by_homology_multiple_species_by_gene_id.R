@@ -5,6 +5,8 @@
 ## ysong@ebi.ac.uk for CrossSpeciesIntegration pipeline
 #########
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
 
 library(optparse)
 library(anndata)

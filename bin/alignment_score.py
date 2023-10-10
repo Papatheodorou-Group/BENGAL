@@ -1,3 +1,6 @@
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
 K_default=20
 
 import pandas as pd

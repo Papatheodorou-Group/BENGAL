@@ -1,18 +1,21 @@
 ## BENGAL: BENchmarking strateGies for cross-species integrAtion of singLe-cell RNA sequencing data ##
 
-
 Author&maintainer: Yuyao Song <ysong@ebi.ac.uk>
 
 A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integration and assessment of integration results.
 
-[check our preprint](https://www.biorxiv.org/content/10.1101/2022.09.27.509674).
+[check our preprint](https://www.biorxiv.org/content/10.1101/2022.09.27.509674v2).
 
-[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419)
+The BENGAL pipeline used upon publication of the paper is archived in zenodo:
+
+[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419).
+
+**On Oct 2023, Yuyao updated the pipeline for containerization, improvements in anndata/seurat conversion, updates in scrips and updates in Nextflow.**
 
 ## This repo includes:
 
 1) the Nextflow pipeline for cross-species integration of scRNA-seq data using various strategies
-2) conda environment configurations and containers
+2) containers paths, dockerfiles used and conda environments
 3) an example config file for running the Nextflow pipeline
 
 ## System requirements
@@ -30,15 +33,15 @@ Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory
 **If nextflow or singularity is not installed in your cluster, install them. This can take some efforts and it might worth discussing with cluster IT managers. Please refer to [nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html) or [singularity documentation](https://singularity-tutorial.github.io/01-installation/).** 
 
 
-## Inputs:
+## Inputs
 The nextflow script takes one input file: a tab-seperated metadata file mapping species to the paths of raw count AnnData objects, in the form of .h5ad files. See example: `example_metadata_nf.tsv`. 
 
 The config file defines project directories and parameters. See example: `config/example.config`
 
-**Please change the directories and parameters in the metadata and config file for your own application as appropriate**
+**Please change the metadata file, and the directories and parameters in the config file for your own application as appropriate**
+**Read the instrictions in the config file and change relevant entries is crucial for running the pipeline**
 
 #### Input Requirements:
-
 *These requirements will be checked in the first process of the pipeline.*
 
 The raw count AnnData objects need to have the following row or column annotations. Note that the exact column name of each key is specified in the config file.
@@ -51,42 +54,46 @@ The .var_names of the raw count AnnData file should be ENSEMBL gene ids.
 The .X of the raw count AnnData file should be stored in dense matrix format, if SeuratDisk is used for .h5ad/.h5seurat conversion.
 
 
-## Run instructions:
+## Run instructions
 
-#### Perpare the conda environment for .h5ad/.h5seurat conversion. 
+#### Perpare the conda environment for anndata/seurat conversion. 
+In principle, you can use any program to perform the conversion. Since Oct 2023 we now use [sceasy](https://github.com/cellgeni/sceasy). We also no longer use h5seurat format due to challenges in converting to/from anndata. 
 
-In principle, you can use any program to perform the conversion. Here we used [SeuratDisk](https://github.com/mojaveazure/seurat-disk). Installation of SeuratDisk from source under the provided environment here is recommended for stable conversion results. Note that the conda environments for other packages are included in the nextflow program and will be created upon execution. [Mamba](https://github.com/mamba-org/mamba) is recommended as a faster substitute for conda. 
+It didn't seem so necessary to containerize this process so we provide a light conda environment that is compatible with other parts of the pipeline. [Mamba](https://github.com/mamba-org/mamba) is recommended as a faster substitute for conda. 
 
 First create a conda environment for the conversion:
 
-    conda env create -f envs/hdf5_1820.yml
-    conda activate hdf5_1820
-    R
+`conda env create -f envs/sceasy.yml`
 
-Then install the package in the R session:
+Then put the path of your sceasy conda environment into the config file in the indicated place.
 
-    if (!requireNamespace("remotes", quietly = TRUE)) {
-      install.packages("remotes")
-    }
-    remotes::install_github("mojaveazure/seurat-disk", upgrade = 'never')
+#### Perpare the conda environment for running scVI/scANVI and scIB
 
+These two parts are not containerized since the conda env is relatively easy to set up while the respective container will be very heavy. In the future we might consider containerizing it if necessary.
 
+`conda env create -f envs/scvi.yml`
 
-Note, the key for this environment to work is the compatible R, hdf5r and hdf5 version. Do not change this from the defined version in envs/h5ad_h5seurat_convert.yml.
+`conda env create -f envs/scib.yml`
+
+Then put the path of your scvi and scib conda environments into the config file in the indicated place.
+
+#### Pull the containers used in BENGAL. 
+Due to the complexity of packages involved in BENGAL, we now provide some containers to help execute the pipeline. Please pull these containers into a local dir and specify in the config file. Here we assume you use [singularity](https://sylabs.io/) to run these containers on a HPC cluster.
+
+1. Concatenate anndata files cross-species: `singularity pull bengal_concat.sif docker://yysong123/bengal_concat:4.2.0`
+2. Python based integration: `singularity pull bengal_py.sif docker://yysong123/bengal_py:1.9.2`
+3. Seurat/R based integration: `singularity pull bengal_seurat.sif docker://yysong123/bengal_seurat:4.3.0`
 
 ### To run BENGAL:
-
 In a bash shell, check your metadata/config files are set and run:
 
 1) `conda activate nextflow && nextflow -C config/example.config run concat_by_homology_multiple_species.nf`. Add flag `-with-trace -with-report report.html` if you want nextflow run stats.
-2) Convert concatenated files from .h5ad to .h5seurat using SeuratDisk (do not remove the .h5ad files). This is for running R-based methods that requires .h5seurat as input. The `envs/h5ad_h5seurat_convert.yml` is a working environment to perform the conversion (see above). 
-3) `nextflow -C config/example.config run cross_species_integration_multiple_species.nf`
-4) Convert methods that output .h5seurat files to .h5ad files (do not remove the .h5seurat files), this is for calculating benchmarking metrics.
-5) `nextflow -C config/example.config run cross_species_assessment_multiple_species_individual.nf`
+2) `nextflow -C config/example.config run cross_species_integration_multiple_species.nf`
+3) `nextflow -C config/example.config run cross_species_assessment_multiple_species_individual.nf`
 
 Note: add resume flag `-resume` as appropriate to avoid re-calculation of the same data during multiple runs.
 
-## Outputs:
+## Outputs
 
 1) Concatenated raw count AnnData objects containing cells from all species, in the form of .h5ad files. Objects are concatenated by matching genes between species using gene homology annotation from ENSEMBL.  
 2) Integration result from different algorithms including: [fastMNN](https://bioconductor.org/packages/release/bioc/html/batchelor.html), [harmony](https://github.com/slowkow/harmonypy), [LIGER](https://github.com/welch-lab/liger), [LIGER-UINMF](https://github.com/welch-lab/liger), [scanorama](https://github.com/brianhie/scanorama), [scVI](https://scvi-tools.org/), [SeuratV4CCA](https://satijalab.org/seurat/) and [SeuratV4RPCA](https://satijalab.org/seurat/), in the form of AnnData (.h5ad) or Seurat (.h5seurat) objects.
@@ -96,6 +103,6 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 
 Estimated execution time: ~6h for integrated dataset with 100,000 cells using resources specified in the .nf scripts.
 
-LICENSE: MIT license
+LICENSE: GPLv3 license
 
 

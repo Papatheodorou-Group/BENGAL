@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+// © EMBL-European Bioinformatics Institute, 2023
 // Updated upon containerization of BENGAL envs
 // Yuyao Song <ysong@ebi.ac.uk>
 // Oct 2023

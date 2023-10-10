@@ -1,5 +1,8 @@
 #/usr/bin/env python3
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
 # ysong update pydantic to v2 for containerization Oct 2023
 
 import click

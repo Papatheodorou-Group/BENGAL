@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
+
 import os
 
 import click
@@ -7,7 +12,6 @@ import scanpy as sc
 import random
 import scib
 import numpy
-
 
 # set R for kBET
 import os

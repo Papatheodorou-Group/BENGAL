@@ -1,4 +1,9 @@
 #/usr/bin/env python3
+
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
+
+
 import click
 from typing import List
 
@@ -12,6 +17,7 @@ import itertools
 from SCCAF import *
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn import metrics
+
 
 @click.command()
 

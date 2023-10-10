@@ -2,6 +2,8 @@
 
 library(optparse)
 
+# © EMBL-European Bioinformatics Institute, 2023
+# Yuyao Song <ysong@ebi.ac.uk>
 
 option_list <- list(
   make_option(c("-i", "--input_file"),
