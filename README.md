@@ -61,6 +61,8 @@ In principle, you can use any program to perform the conversion. Since Oct 2023 
 
 It didn't seem so necessary to containerize this process so we provide a light conda environment that is compatible with other parts of the pipeline. [Mamba](https://github.com/mamba-org/mamba) is recommended as a faster substitute for conda. 
 
+I personally perfer creating a conda env independent of nextflow and then point nextflow to the absolute path of the conda env. This way saves the running time of the pipeline and make reuse of the same env and debug easier.
+
 First create a conda environment for the conversion:
 
 `conda env create -f envs/sceasy.yml`
@@ -69,7 +71,7 @@ Then put the path of your sceasy conda environment into the config file in the i
 
 #### Perpare the conda environment for running scVI/scANVI and scIB
 
-These two parts are not containerized since the conda env is relatively easy to set up while the respective container will be very heavy. In the future we might consider containerizing it if necessary.
+These two parts are also not containerized since the conda env is relatively easy to set up while the respective container will be very heavy. In the future we might consider containerizing it if necessary.
 
 `conda env create -f envs/scvi.yml`
 
@@ -78,11 +80,12 @@ These two parts are not containerized since the conda env is relatively easy to 
 Then put the path of your scvi and scib conda environments into the config file in the indicated place.
 
 #### Pull the containers used in BENGAL. 
-Due to the complexity of packages involved in BENGAL, we now provide some containers to help execute the pipeline. Please pull these containers into a local dir and specify in the config file. Here we assume you use [singularity](https://sylabs.io/) to run these containers on a HPC cluster.
+Due to the complexity of packages involved in BENGAL, we now provide a few containers to help execute the pipeline. Please pull these containers into a local dir and specify in the config file. Here we assume you use [singularity](https://sylabs.io/) to run these containers on a HPC cluster.
 
 1. Concatenate anndata files cross-species: `singularity pull bengal_concat.sif docker://yysong123/bengal_concat:4.2.0`
 2. Python based integration: `singularity pull bengal_py.sif docker://yysong123/bengal_py:1.9.2`
 3. Seurat/R based integration: `singularity pull bengal_seurat.sif docker://yysong123/bengal_seurat:4.3.0`
+4. SCCAF assessment for ALCS: `singularity pull bengal_sccaf.sif docker://yysong123/bengal_sccaf:latest` 
 
 ### To run BENGAL:
 In a bash shell, check your metadata/config files are set and run:
@@ -102,6 +105,8 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 5) Cross-species cell type annotation transfer results with [SCCAF](https://github.com/SCCAF/sccaf).
 
 Estimated execution time: ~6h for integrated dataset with 100,000 cells using resources specified in the .nf scripts.
+
+Practical note: sometimes you will see a nextflow 'missing output files expected by process xx' error for rliger related processes, but the outputs are there. This is due to file system latency of the cluster and there is no better solution so far that I am aware of (kindly let me know if you have solved this).
 
 LICENSE: GPLv3 license
 
