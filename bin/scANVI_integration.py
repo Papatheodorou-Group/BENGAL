@@ -48,7 +48,7 @@ def run_scANVI(input_h5ad, out_h5ad, out_umap, out_scanvi, batch_key, species_ke
     vae = scvi.model.SCANVI(adata)
     vae.train()
     adata.obsm["X_scANVI"] = vae.get_latent_representation()
-    adata.obsm["X_mde_scanvi"] = mde(adata.obsm["X_scANVI"])
+    adata.obsm["X_mde_scanvi"] = scvi.model.utils.mde(adata.obsm["X_scANVI"])
 
     sc.pl.embedding(
     adata, basis="X_mde_scanvi", color=[batch_key, species_key, cluster_key], ncols=1, frameon=False
