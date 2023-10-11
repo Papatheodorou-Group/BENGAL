@@ -1,6 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+// © EMBL-European Bioinformatics Institute, 2023
+
+// Updated upon containerization of BENGAL envs
+// Yuyao Song <ysong@ebi.ac.uk>
+// Oct 2023
+
 
 log.info """
          ===========================================================
@@ -20,14 +26,12 @@ log.info """
 
 
 process harmony_integration {
+    
+    label 'scanpy_based'
+    label 'regular_intg_resource'
 
     publishDir "${params.results}/results/harmony/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 12
-    queue 'research'
-    memory '150GB'
-    conda "${projectDir}/envs/py_based_integration.yml"
-    cache 'lenient'
-
+   
     input:
     tuple val(baseName), path(file)
 
@@ -46,13 +50,11 @@ process harmony_integration {
 
 process scanorama_integration {
 
-    publishDir "${params.results}/results/scanorama/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 12
-    queue 'research'
-    memory '150GB'
-    conda "${projectDir}/envs/py_based_integration.yml"
-    cache 'lenient'
+    label 'scanpy_based'
+    label 'regular_intg_resource'
 
+    publishDir "${params.results}/results/scanorama/cross_species/integrated_h5ad", mode: 'copy'
+    
     input:
     tuple val(baseName), path(file)
 
@@ -72,12 +74,10 @@ process scanorama_integration {
 // scVI uses GPU
 process scvi_integration {
 
+    label 'scvi_based'
+    label 'GPU_intg_resource'
+
     publishDir "${params.results}/results/scVI/cross_species/integrated_h5ad", mode: 'copy'
-    queue 'gpu'
-    clusterOptions ' -gpu "num=2:j_exclusive=no" -P gpu -n 4 '
-    memory '50GB'
-    conda "${projectDir}/envs/scVI_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(file)
@@ -96,12 +96,11 @@ process scvi_integration {
 // scANVI uses GPU
 process scanvi_integration {
 
+
+    label 'scvi_based'
+    label 'GPU_intg_resource'
+
     publishDir "${params.results}/results/scANVI/cross_species/integrated_h5ad", mode: 'copy'
-    queue 'gpu'
-    clusterOptions ' -gpu "num=2:j_exclusive=no" -P gpu -n 4 '
-    memory '50GB'
-    conda "${projectDir}/envs/scVI_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(file)
@@ -114,7 +113,7 @@ process scanvi_integration {
     """
     python ${projectDir}/bin/scANVI_integration.py \
     --batch_key ${params.batch_key} --species_key ${params.species_key} --cluster_key ${params.cluster_key} \
-    ${file} ${baseName}_scANVI_integrated.h5ad ${baseName}_scANVI_integrated_UMAP.png
+    ${file} ${baseName}_scANVI_integrated.h5ad ${baseName}_scANVI_integrated_UMAP.png ${baseName}_scANVI_integrated_mde.png
     """
 }
 
@@ -122,109 +121,100 @@ process scanvi_integration {
 
 process seurat_CCA_integration{
 
+
+    label 'seurat_based'
+    label 'bigmem_intg_resource'
+
     publishDir "${params.results}/results/seuratCCA/cross_species/integrated_h5ad/", mode: 'copy'
-    cpus 12
-    queue 'bigmem'
-    memory '350GB'
-    conda "${projectDir}/envs/r_based_concat_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(file)
 
     output:
-    path "${baseName}_seuratCCA_integrated.h5seurat", emit: seuratCCA_cross_species_h5seurat_ch
+    path "${baseName}_seuratCCA_integrated.rds", emit: seuratCCA_cross_species_rds_ch
     path "${baseName}_seuratCCA_integrated_UMAP.pdf" , emit: seuratCCA_cross_species_umap_ch
 
     script:
     """
-    Rscript ${projectDir}/bin/seurat_CCA_integration.R -i ${file} -o ${baseName}_seuratCCA_integrated.h5seurat -p ${baseName}_seuratCCA_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
+    Rscript ${projectDir}/bin/seurat_CCA_integration.R -i ${file} -o ${baseName}_seuratCCA_integrated.rds -p ${baseName}_seuratCCA_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
     """
 }
 
 
 process seurat_RPCA_integration{
 
-    publishDir "${params.results}/results/seuratRPCA/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 12
-    queue 'research'
-    memory '200GB'
-    conda "${projectDir}/envs/r_based_concat_integration.yml"
-    cache 'lenient'
+    label 'seurat_based'
+    label 'bigmem_intg_resource'
 
+    publishDir "${params.results}/results/seuratRPCA/cross_species/integrated_h5ad", mode: 'copy'
+   
     input:
     tuple val(baseName), path(file)
 
     output:
-    path "${baseName}_seuratRPCA_integrated.h5seurat" , emit: seuratRPCA_cross_species_h5seurat_ch
+    path "${baseName}_seuratRPCA_integrated.rds" , emit: seuratRPCA_cross_species_rds_ch
     path "${baseName}_seuratRPCA_integrated_UMAP.pdf" , emit: seuratRPCA_cross_species_umap_ch
 
     script:
     """
-    Rscript ${projectDir}/bin/seurat_RPCA_integration.R -i ${file} -o ${baseName}_seuratRPCA_integrated.h5seurat -p ${baseName}_seuratRPCA_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
+    Rscript ${projectDir}/bin/seurat_RPCA_integration.R -i ${file} -o ${baseName}_seuratRPCA_integrated.rds -p ${baseName}_seuratRPCA_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
     """
 }
 
 process fastMNN_integration{
 
+    label 'R_based'
+    label 'regular_intg_resource'
+
     publishDir "${params.results}/results/fastMNN/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 8
-    queue 'research'
-    memory '200GB'
-    conda "${projectDir}/envs/r_based_concat_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(file)
 
     output:
-    path "${baseName}_fastMNN_integrated.h5seurat" , emit: fastMNN_cross_species_h5seurat_ch
+    path "${baseName}_fastMNN_integrated.rds" , emit: fastMNN_cross_species_rds_ch
     path "${baseName}_fastMNN_integrated_UMAP.pdf" , emit: fastMNN_cross_species_UMAP_ch
 
     script:
     """
-    Rscript ${projectDir}/bin/fastMNN_integration.R -i ${file} -o ${baseName}_fastMNN_integrated.h5seurat -p ${baseName}_fastMNN_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
+    Rscript ${projectDir}/bin/fastMNN_integration.R -i ${file} -o ${baseName}_fastMNN_integrated.rds -p ${baseName}_fastMNN_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
     """
 }
 
 
 process liger_integration{
 
+    label 'R_based'
+    label 'regular_intg_resource'
+
     publishDir "${params.results}/results/LIGER/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 8
-    queue 'research'
-    memory '200GB'
-    conda "${projectDir}/envs/r_based_concat_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(file)
 
     output:
-    path "${baseName}_LIGER_integrated.h5seurat", emit: liger_cross_species_h5seurat_ch
+    path "${baseName}_LIGER_integrated.rds", emit: liger_cross_species_rds_ch
     path "${baseName}_LIGER_integrated_UMAP.pdf", emit: liger_cross_species_UMAP_ch
 
     script:
     """
-    Rscript ${projectDir}/bin/LIGER_integration.R -i ${file} -o ${baseName}_LIGER_integrated.h5seurat -p ${baseName}_LIGER_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
+    Rscript ${projectDir}/bin/LIGER_integration.R -i ${file} -o ${baseName}_LIGER_integrated.rds -p ${baseName}_LIGER_integrated_UMAP.pdf -b ${params.batch_key} -s ${params.species_key} -c ${params.cluster_key}
     """
 }
 
 
 process rligerUINMF_integration{
 
+    label 'R_based'
+    label 'regular_intg_resource'
+
     publishDir "${params.results}/results/rligerUINMF/cross_species/integrated_h5ad", mode: 'copy'
-    cpus 8
-    queue 'research'
-    memory '200GB'
-    conda "${projectDir}/envs/r_based_concat_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(baseName), path(metadata)
 
     output:
-    path "*_rligerUINMF_integrated.h5seurat"
+    path "*_rligerUINMF_integrated.rds"
     path "*_rligerUINMF_integrated_UMAP.pdf"
 
     script:
@@ -244,7 +234,7 @@ workflow {
     all_homology_h5ad_mapped_ch = Channel.fromPath(params.homology_concat_h5ad)
                                          .map { file -> tuple(file.baseName, file) }
 
-    all_homology_h5seurat_mapped_ch = Channel.fromPath(params.homology_concat_h5seurat)
+    all_homology_rds_mapped_ch = Channel.fromPath(params.homology_concat_rds)
                                          .map { file -> tuple(file.baseName, file) }
 
     concatenated_h5ad = all_homology_h5ad_mapped_ch
@@ -255,11 +245,11 @@ workflow {
     scvi_integration(concatenated_h5ad)
     scanvi_integration(concatenated_h5ad)
 
-    concatenated_h5seurat = all_homology_h5seurat_mapped_ch
-    seurat_CCA_integration(concatenated_h5seurat)
-    seurat_RPCA_integration(concatenated_h5seurat)
-    fastMNN_integration(concatenated_h5seurat)
-    liger_integration(concatenated_h5seurat)
+    concatenated_rds = all_homology_rds_mapped_ch
+    seurat_CCA_integration(concatenated_rds)
+    seurat_RPCA_integration(concatenated_rds)
+    fastMNN_integration(concatenated_rds)
+    liger_integration(concatenated_rds)
 
     liger_metadata = Channel.fromPath(params.liger_metadata)
                                          .map { file -> tuple(file.baseName, file) }

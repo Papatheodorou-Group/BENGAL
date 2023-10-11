@@ -55,7 +55,11 @@ def run_scANVI(input_h5ad, out_h5ad, out_umap, out_scanvi, batch_key, species_ke
     )
     plt.savefig(out_scanvi, dpi=300,  bbox_inches='tight')
 
-    sc.pp.neighbors(adata, use_rep="X_scANVI", key_added='scANVI', n_neighbors=15, n_pcs=40)
+    num_pcs = min(adata.obsm['X_scANVI'].shape[1], 40)
+    if num_pcs < 40:
+        click.echo("using less PCs: " + str(num_pcs))
+
+    sc.pp.neighbors(adata, use_rep="X_scANVI", key_added='scANVI', n_neighbors=15, n_pcs=num_pcs)
     sc.tl.umap(adata, neighbors_key='scANVI', min_dist=0.3) ## to match min_dist in seurat
     sc.pl.umap(adata, neighbors_key='scANVI', color=[batch_key, species_key, cluster_key], ncols=1)
     plt.savefig(out_umap, dpi=300,  bbox_inches='tight')
