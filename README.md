@@ -14,7 +14,7 @@ A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integ
 
 ## System requirements
 #### Hardware:
-This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other schedulers by changing job resource syntax in the nextflow script. If the GPU inplementation of scVI/scANVI is to be used (beneficial for speeding up the integration on large datasets), GPU computing nodes are required, please refer to [scVI-tools site](https://scvi-tools.org/) for respective setups.
+This workflow is written to be executed on HPC clusters with LSF job scheduler. It could be easily adapted to other schedulers by changing job resource syntax in the nextflow config file. If the GPU inplementation of scVI/scANVI is to be used (beneficial for speeding up the integration on large datasets), GPU computing nodes are required, please refer to [scVI-tools site](https://scvi-tools.org/) for respective setups.
 
 #### OS:
 Development of this workflow was done on Rocky Linux 8.5 (RHEL), while in theory this can be run on any linux distribution. To run the GPU inplementation of scVI/scANVI we used Nvidia Tesla V100 GPUs. 
