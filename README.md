@@ -4,7 +4,7 @@ Author&maintainer: Yuyao Song <ysong@ebi.ac.uk>
 
 A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integration and assessment of integration results.
 
-[check our preprint](https://www.biorxiv.org/content/10.1101/2022.09.27.509674v2).
+The associated publication is [here](https://www.nature.com/articles/s41467-023-41855-w)
 
 The BENGAL pipeline used upon publication of the paper is archived in zenodo:
 
