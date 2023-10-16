@@ -110,7 +110,7 @@ Song, Y., Miao, Z., Brazma, A. et al. Benchmarking strategies for cross-species 
 
 The BENGAL pipeline used upon publication of the paper is archived in zenodo:
 
-[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419).
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8268784.svg)](https://doi.org/10.5281/zenodo.8268784)
 
 LICENSE: GPLv3 license
 
