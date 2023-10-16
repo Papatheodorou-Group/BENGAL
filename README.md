@@ -4,12 +4,6 @@ Author&maintainer: Yuyao Song <ysong@ebi.ac.uk>
 
 A Nextflow DSL2 pipeline to perform cross-species single-cell RNA-seq data integration and assessment of integration results.
 
-The associated publication is [here](https://www.nature.com/articles/s41467-023-41855-w)
-
-The BENGAL pipeline used upon publication of the paper is archived in zenodo:
-
-[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419).
-
 **On Oct 2023, Yuyao updated the pipeline for containerization, improvements in anndata/seurat conversion, updates in scrips and updates in Nextflow.**
 
 ## This repo includes:
@@ -107,6 +101,16 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 Estimated execution time: ~6h for integrated dataset with 100,000 cells using resources specified in the .nf scripts.
 
 Practical note: sometimes you will see a nextflow 'missing output files expected by process xx' error for rliger related processes, but the outputs are there. This is due to file system latency of the cluster and there is no better solution so far that I am aware of (kindly let me know if you have solved this).
+
+## Citation
+
+The publication in which we described and applied BENGAL is [here](https://www.nature.com/articles/s41467-023-41855-w). Please cite it if you use BENGAL.
+
+Song, Y., Miao, Z., Brazma, A. et al. Benchmarking strategies for cross-species integration of single-cell RNA sequencing data. Nat Commun 14, 6495 (2023). https://doi.org/10.1038/s41467-023-41855-w
+
+The BENGAL pipeline used upon publication of the paper is archived in zenodo:
+
+[![DOI](https://zenodo.org/badge/467978419.svg)](https://zenodo.org/badge/latestdoi/467978419).
 
 LICENSE: GPLv3 license
 
