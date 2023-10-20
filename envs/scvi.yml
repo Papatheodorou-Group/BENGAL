@@ -1,4 +1,4 @@
-name: scvi
+name: scvi-3.10
 channels:
   - bioconda
   - conda-forge
@@ -187,6 +187,7 @@ dependencies:
       - pydantic-core==2.4.0
       - pygments==2.16.1
       - pyjwt==2.8.0
+      - pymde==0.1.18
       - pyro-api==0.1.2
       - pyro-ppl==1.8.6
       - python-editor==1.0.4
@@ -207,6 +208,7 @@ dependencies:
       - toolz==0.12.0
       - torch==2.1.0
       - torchmetrics==1.2.0
+      - torchvision==0.16.0
       - traitlets==5.11.2
       - triton==2.1.0
       - types-python-dateutil==2.8.19.14
