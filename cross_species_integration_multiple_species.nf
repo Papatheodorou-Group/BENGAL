@@ -223,11 +223,13 @@ process rligerUINMF_integration{
     Rscript ${projectDir}/bin/rliger_integration_UINMF_multiple_species.R \
     --basename ${baseName} \
     --metadata ${params.liger_metadata} \
-    --out_dir ${params.results}/results/rligerUINMF/cross_species/integrated_h5ad  \
+    --out_dir .  \
     --cluster_key ${params.cluster_key}
     """
 }
 
+// nextflow will search for the output file in the cwd 
+// so set the out_dir in the script to cwd, then nextflow will copy the results to the publishDir anyway
 
 workflow {
 
