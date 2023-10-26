@@ -50,8 +50,10 @@ if(type == 'anndata_to_seurat'){
 } else if (type == 'seurat_to_anndata'){
 
     message(paste0("from seurat to anndata, input: ", input_file))
-    
-    sceasy::convertFormat(input_file, from="seurat", to="anndata",
+    obj <- readRDS(input_file)
+    dir_name = dirname(input_file)
+    ## it is bizzar that from seurat to anndata needs loading object, but the other way works on-disk
+    sceasy::convertFormat(obj, from="seurat", to="anndata",
                        outFile=output_file)
 
 } else {
