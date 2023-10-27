@@ -71,15 +71,16 @@ These two parts are also not containerized since the conda env is relatively eas
 
 `conda env create -f envs/scib.yml`
 
-Then put the path of your scvi and scib conda environments into the config file in the indicated place.
+Then put the path of your scvi and scib conda environments into the config file in the indicated place. These env files are just created as I followed the installation instruction from [scvi](https://docs.scvi-tools.org/en/stable/installation.html) and [scib](https://scib.readthedocs.io/en/stable/installation.html) under Python 3.10.10, so if you encounter any issues, feel free to create your own evns based on their instructions.
 
 #### Pull the containers used in BENGAL. 
-Due to the complexity of packages involved in BENGAL, we now provide a few containers to help execute the pipeline. Please pull these containers into a local dir and specify in the config file. Here we assume you use [singularity](https://sylabs.io/) to run these containers on a HPC cluster.
+
+We now provide a few containers to help execute the pipeline (well deserved yay due to the complexity of building them...). Please pull these containers into a local dir and specify in the config file. Here we assume you use [singularity](https://sylabs.io/) to run these containers on a HPC cluster.
 
 1. Concatenate anndata files cross-species: `singularity pull bengal_concat.sif docker://yysong123/bengal_concat:4.2.0`
 2. Python based integration: `singularity pull bengal_py.sif docker://yysong123/bengal_py:1.9.2`
 3. Seurat/R based integration: `singularity pull bengal_seurat.sif docker://yysong123/bengal_seurat:4.3.0`
-4. SCCAF assessment for ALCS: `singularity pull bengal_sccaf.sif docker://yysong123/bengal_sccaf:latest` 
+4. SCCAF assessment for ALCS: `singularity pull bengal_sccaf.sif docker://yysong123/bengal_sccaf:0.0.11` 
 
 ### To run BENGAL:
 In a bash shell, check your metadata/config files are set and run:
