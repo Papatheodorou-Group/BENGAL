@@ -15,11 +15,6 @@ import numpy
 
 # set R for kBET
 import os
-os.environ['R_HOME'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R'
-os.environ['PATH'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/bin:' + os.environ['PATH']
-os.environ['R_LIBS_USER'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R/library'
-os.environ['R_LIBS'] = '/nfs/research/icortes/ysong/anaconda3/envs/scib-pipeline-R4.0/lib/R/library'
-
 
 ## set seed 
 random.seed(123)
@@ -55,6 +50,14 @@ numpy.random.seed(456)
     default=1,
     help="Number of cores for graph LISI scores",
 )
+@click.option(
+    "--conda_path",
+    type=str,
+    default=None,
+    help="scIB conda path",
+)
+
+
 def run_scIB_metrics(
     input_h5ad,
     unintegrated_h5ad,
@@ -68,17 +71,25 @@ def run_scIB_metrics(
     cluster_key,
     integration_method,
     num_cores,
+    conda_path
 ):
+    
+
+    os.environ['R_HOME'] = f"{conda_path}/lib/R"
+    os.environ['PATH'] = f"{conda_path}/bin:" + os.environ['PATH']
+    os.environ['R_LIBS_USER'] = f"{conda_path}/lib/R/library"
+    os.environ['R_LIBS'] = f"{conda_path}lib/R/library"
+    os.environ['LD_LIBRARY_PATH'] = f"{conda_path}/lib"
+
     # dictionary for method properties
     embedding_keys = {
         "harmony": "X_pca_harmony",
         "scanorama": "X_scanorama",
         "scVI": "X_scVI",
         "scANVI": "X_scANVI",
-        "LIGER": "X_iNMF",
+        "LIGER": "X_inmf",
         "rligerUINMF": "X_inmf",
         "fastMNN": "X_mnn",
-        "SAMap": "wPCA",
     }
     use_embeddings = {
         "harmony": True,
@@ -88,7 +99,6 @@ def run_scIB_metrics(
         "LIGER": True,
         "rligerUINMF": True,
         "fastMNN": True,
-        "SAMap": True,
         "seuratCCA": False,
         "seuratRPCA": False,
         "unintegrated": False,
@@ -101,7 +111,6 @@ def run_scIB_metrics(
         "LIGER": True,
         "rligerUINMF": True,
         "fastMNN": True,
-        "SAMap": False,
         "seuratCCA": True,
         "seuratRPCA": True,
         "unintegrated": False,
@@ -120,12 +129,12 @@ def run_scIB_metrics(
     input_ad.obs[batch_key] = input_ad.obs[batch_key].astype("category")
     
     # known bug - fix when convert h5Seurat to h5ad the index name error
-    if from_h5seurat[integration_method] is True:
-        input_ad.__dict__["_raw"].__dict__["_var"] = (
-            input_ad.__dict__["_raw"]
-            .__dict__["_var"]
-            .rename(columns={"_index": "features"})
-        )
+    #if from_h5seurat[integration_method] is True:
+    #    input_ad.__dict__["_raw"].__dict__["_var"] = (
+    #        input_ad.__dict__["_raw"]
+    #        .__dict__["_var"]
+    #        .rename(columns={"_index": "features"})
+    #    )
 
     use_embedding = use_embeddings[integration_method]
     if use_embedding is True:
@@ -136,10 +145,8 @@ def run_scIB_metrics(
     # for lisi type_='knn'
     # LIGER embedding only have 20 dims
 
-    if integration_method == "SAMap":
-        click.echo("use SAMap KNN graph")
-        # do nothing
-    elif use_embedding is True:
+
+    if use_embedding is True:
         click.echo("calculate KNN graph from embedding " + embedding_key)
         num_pcs = min(input_ad.obsm[embedding_key].shape[1], 20)
         if num_pcs < 20:
@@ -253,7 +260,7 @@ def run_scIB_metrics(
         input_ad,
         batch_key=batch_key,
         label_key=cluster_key,
-        type_="knn", ## for equal treatment of SAMap and other methods
+        type_="knn", ## for equal treatment
         scaled=True,
         return_df=False,
         verbose=True,

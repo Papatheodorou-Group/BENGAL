@@ -33,7 +33,7 @@ from sklearn import metrics
 
 def run_sccaf_projection(input_h5ad, species_key,  cluster_key, projection_key, integration_method, out_projection_h5ads, out_figures, out_acc_csv):
 # dictionary for method properties
-    embedding_keys={"harmony": "X_pca_harmony", "scanorama": "X_scanorama", "scVI": "X_scVI", "LIGER": "X_iNMF", "rligerUINMF":"X_inmf", "fastMNN": "X_mnn", "SAMap": "wPCA", "scANVI": "X_scANVI"}
+    embedding_keys={"harmony": "X_pca_harmony", "scanorama": "X_scanorama", "scVI": "X_scVI", "LIGER": "X_inmf", "rligerUINMF":"X_inmf", "fastMNN": "X_mnn", "SAMap": "wPCA", "scANVI": "X_scANVI"}
     use_embeddings={"harmony": True, "scanorama": True, "scVI": True, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": True , "seuratCCA": False, "seuratRPCA": False, "scANVI": True, "unintegrated": False}
     from_h5seurat={"harmony": False, "scanorama": False, "scVI": False, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": False , "seuratCCA": True, "seuratRPCA": True, "scANVI": False, "unintegrated": False}
     sc.set_figure_params(dpi_save=200, frameon=False, figsize=(11, 6))
@@ -64,9 +64,9 @@ def run_sccaf_projection(input_h5ad, species_key,  cluster_key, projection_key, 
 
 
     # known bug - fix when convert h5Seurat to h5ad the index name error
-    if from_h5seurat[integration_method] is True:
-        input_ad.__dict__['_raw'].__dict__['_var'] = input_ad.__dict__['_raw'].__dict__['_var'].rename(columns={'_index': 'features'})
-        click.echo("From h5seurat")
+    #if from_h5seurat[integration_method] is True:
+    #    input_ad.__dict__['_raw'].__dict__['_var'] = input_ad.__dict__['_raw'].__dict__['_var'].rename(columns={'_index': 'features'})
+    #    click.echo("From h5seurat")
 
     def get_cell_type_auc(clf, y_test, y_prob):
         rc_aucs = [] #AUC
