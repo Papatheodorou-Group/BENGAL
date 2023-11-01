@@ -229,30 +229,30 @@ def run_scIB_metrics(
         orig_ad, label_key=cluster_key
     )
 
-    click.echo("graph iLISI")
+    # click.echo("graph iLISI")
 
-    output_integrated.loc["iLISI", "value"] = scib.metrics.ilisi_graph(
-        input_ad,
-        batch_key,
-        type_="embed",
-        use_rep=embedding_key,
-        k0=50,
-        subsample=None,
-        n_cores=num_cores,
-        scale=True,
-        verbose=True,
-    )
+    # output_integrated.loc["iLISI", "value"] = scib.metrics.ilisi_graph(
+    #     input_ad,
+    #     batch_key,
+    #     type_="embed",
+    #     use_rep=embedding_key,
+    #     k0=50,
+    #     subsample=None,
+    #     n_cores=num_cores,
+    #     scale=True,
+    #     verbose=True,
+    # )
 
-    output_orig.loc["iLISI", "value"] = scib.metrics.ilisi_graph(
-        orig_ad,
-        batch_key,
-        type_="full",
-        k0=50,
-        subsample=None,
-        n_cores=num_cores,
-        scale=True,
-        verbose=True,
-    )
+    # output_orig.loc["iLISI", "value"] = scib.metrics.ilisi_graph(
+    #     orig_ad,
+    #     batch_key,
+    #     type_="full",
+    #     k0=50,
+    #     subsample=None,
+    #     n_cores=num_cores,
+    #     scale=True,
+    #     verbose=True,
+    # )
 
     click.echo("kBET")
 
@@ -276,30 +276,30 @@ def run_scIB_metrics(
         verbose=True,
     )
 
-    click.echo("cLISI")
+    # click.echo("cLISI")
 
-    output_integrated.loc["cLISI", "value"] = scib.metrics.clisi_graph(
-        input_ad,
-        label_key=cluster_key,
-        type_="embed",
-        use_rep=embedding_key,
-        k0=50,
-        subsample=None,
-        scale=True,
-        n_cores=num_cores,
-        verbose=True,
-    )
+    # output_integrated.loc["cLISI", "value"] = scib.metrics.clisi_graph(
+    #     input_ad,
+    #     label_key=cluster_key,
+    #     type_="embed",
+    #     use_rep=embedding_key,
+    #     k0=50,
+    #     subsample=None,
+    #     scale=True,
+    #     n_cores=num_cores,
+    #     verbose=True,
+    # )
 
-    output_orig.loc["cLISI", "value"] = scib.metrics.clisi_graph(
-        orig_ad,
-        label_key=cluster_key,
-        type_="full",
-        k0=50,
-        subsample=None,
-        scale=True,
-        n_cores=num_cores,
-        verbose=True,
-    )
+    # output_orig.loc["cLISI", "value"] = scib.metrics.clisi_graph(
+    #     orig_ad,
+    #     label_key=cluster_key,
+    #     type_="full",
+    #     k0=50,
+    #     subsample=None,
+    #     scale=True,
+    #     n_cores=num_cores,
+    #     verbose=True,
+    # )
 
     click.echo("NMI")
     click.echo("clustering optimization with leiden")
