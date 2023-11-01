@@ -29,7 +29,7 @@ log.info """
          .stripIndent()
 
 
-metadata = channel.fromPath(params.input_metadata)
+metadata_ch = channel.fromPath(params.input_metadata)
 
 all_integrated_h5ad_mapped_ch = channel
                 .fromPath(params.integrated_h5ad)
@@ -51,31 +51,56 @@ all_integrated_and_orig_h5ad_mapped_ch = channel
                 .map { file -> tuple(file.baseName.split("_")[-2], file.baseName, (params.homology_concat_h5ad - "*.h5ad" + file.baseName - file.baseName.split("_")[-2] - '__integrated'  + ".h5ad"), file) }
 
 
-
+all_integrated_rds_mapped_ch = channel
+                .fromPath(params.integrated_rds)
+                .map { file -> tuple(file.baseName, file, file.getParent()) }
 // method name, file basename, file
 
 process copy_for_rliger {
 
+    label 'regular_resource'
 
     publishDir "${params.results}/results/h5ad_homology_concat", mode: 'copy'
-    cpus 1
-    queue 'research'
-    memory '10GB'
-    conda "${projectDir}/envs/py_based_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(basename), path(unintegrated_h5ad)
 
     output:
-    path "*"
-
+    path "${basename}_liger*.h5ad"
+    val true, emit: signal
 
     shell:
     '''
-    rliger_file=$(echo !{unintegrated_h5ad}  | sed "s/!{basename}/rliger_uinmf_metadata/g") && echo ${rliger_file} && cp !{unintegrated_h5ad} ${rliger_file}
+    if ! [ -n "\$(find !{params.results}/results/h5ad_homology_concat -type f -regex '.*liger.*')" ]
+    then 
+        rliger_file=$(echo !{unintegrated_h5ad}  | sed "s/!{basename}/!{basename}_liger/g") && echo ${rliger_file} && cp !{unintegrated_h5ad} ${rliger_file}
+    fi
     '''
 
+}
+
+process convert_format_rds {
+
+    label 'convert'
+    label 'regular_resource'
+
+    //publishDir "${out_dir}/", mode: 'copy'
+
+    input: 
+    tuple val(basename), path(integrated_rds), path(out_dir)
+
+    //output:
+    //path "*.h5ad"
+    //directly write to results out_dir, not elegant, but works
+
+    script:
+
+    """
+    Rscript ${projectDir}/bin/convert_format.R \
+    -i ${integrated_rds} -o ${out_dir}/${basename}.h5ad -t seurat_to_anndata \
+    --conda_path ${params.sceasy_conda}
+
+    """
 
 
 }
@@ -83,17 +108,16 @@ process copy_for_rliger {
 
 
 process sccaf_assessment {
-    publishDir "${params.results}/results/per_species", mode: 'copy'
-    cpus 8
-    queue 'production'
-    memory '20GB'
-    conda "${projectDir}/envs/py_based_integration.yml"
 
+    label 'regular_resource'
+    label 'sccaf_based'
+
+    publishDir "${params.results}/results/per_species", mode: 'copy'
 
     input:
     path(metadata)
 
-   output:
+    output:
     path '*'
 
     script:
@@ -109,13 +133,12 @@ process sccaf_assessment {
 
 process sccaf_projection {
 
+    label 'regular_resource'
+    label 'sccaf_based'
+
+
     publishDir "${params.results}/results/${method}/cross_species/SCCAF_projection/", mode: 'copy'
 
-    cpus 12
-    queue 'production'
-    memory '50GB'
-    conda "${projectDir}/envs/py_based_integration.yml"
-    cache 'lenient'
 
     input:
     tuple val(method), val(basename), path(cross_species_integrated_h5ad)
@@ -138,19 +161,17 @@ process sccaf_projection {
 
 process batch_metrics{
 
+    label 'regular_resource'
+    label 'scIB_based'
+
     publishDir "${params.results}/batch_metrics/cross_species", mode: 'copy'
-    cpus 4
-    queue 'research'
-    memory '100GB'
-    conda "${projectDir}/envs/scib-pipeline-R4.0.yml"
-    cache 'lenient'
 
     input:
-    tuple val(method), val(basename), path(unintegrated_h5ad), path(cross_species_integrated_h5ad)
+    
+    tuple val(ready), val(method), val(basename), path(unintegrated_h5ad), path(cross_species_integrated_h5ad)
 
     output:
     path "*"
-
     
     script:
     """
@@ -162,7 +183,7 @@ process batch_metrics{
     ${basename}_scIB.h5ad \
     --integration_method ${method} --batch_key ${params.batch_key} \
     --species_key ${params.species_key} --cluster_key ${params.cluster_key} \
-    --num_cores 4
+    --num_cores 4 --conda_path ${params.scib_conda}
 
     """
 
@@ -174,12 +195,10 @@ process batch_metrics{
 
 process trajectory_metrics{
 
+    label 'regular_resource'
+    label 'scIB_based'
+
     publishDir "${params.results}/batch_metrics/cross_species", mode: 'copy'
-    cpus 4
-    queue 'research'
-    conda "${projectDir}/envs/scib-pipeline-R4.0.yml"
-    memory '100GB'
-    cache 'lenient'
 
     input:
     tuple val(method), val(basename), path(unintegrated_h5ad), path(cross_species_integrated_h5ad)
@@ -201,12 +220,16 @@ process trajectory_metrics{
 
 
 workflow {
-    integrated_h5ad = all_integrated_h5ad_mapped_ch
-    integrated_and_orig_h5ad = all_integrated_and_orig_h5ad_mapped_ch
-    orig_h5ad = all_orig_h5ad_mapped_ch
-    metadata_ch = metadata
-    all_orig_h5ad_with_base_mapped_ch.view()
+
+    //all_integrated_rds_mapped_ch.view()
+
+    //convert_format_rds(all_integrated_rds_mapped_ch)
+
     copy_for_rliger(all_orig_h5ad_with_base_mapped_ch)
-    batch_metrics(integrated_and_orig_h5ad)
-    trajectory_metrics(integrated_and_orig_h5ad)
+    //sccaf_assessment(metadata_ch)
+    //sccaf_projection(all_integrated_h5ad_mapped_ch)
+    ch_test = copy_for_rliger.out.signal.combine(all_integrated_and_orig_h5ad_mapped_ch).unique()
+
+    batch_metrics(ch_test)
+    //trajectory_metrics(iall_integrated_and_orig_h5ad_mapped_ch)
 }
