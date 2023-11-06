@@ -66,7 +66,6 @@ process copy_for_rliger {
     tuple val(basename), path(unintegrated_h5ad)
 
     output:
-    path "${basename}_liger*.h5ad"
     val true, emit: signal
 
     shell:
@@ -161,7 +160,7 @@ process sccaf_projection {
 
 process batch_metrics{
 
-    label 'regular_resource'
+    label 'regular_intg_resource'
     label 'scIB_based'
 
     publishDir "${params.results}/batch_metrics/cross_species", mode: 'copy'
@@ -223,13 +222,12 @@ workflow {
 
     //all_integrated_rds_mapped_ch.view()
 
-    //convert_format_rds(all_integrated_rds_mapped_ch)
+    convert_format_rds(all_integrated_rds_mapped_ch)
 
     copy_for_rliger(all_orig_h5ad_with_base_mapped_ch)
-    //sccaf_assessment(metadata_ch)
-    //sccaf_projection(all_integrated_h5ad_mapped_ch)
+    sccaf_assessment(metadata_ch)
+    sccaf_projection(all_integrated_h5ad_mapped_ch)
     ch_test = copy_for_rliger.out.signal.combine(all_integrated_and_orig_h5ad_mapped_ch).unique()
-
     batch_metrics(ch_test)
     //trajectory_metrics(iall_integrated_and_orig_h5ad_mapped_ch)
 }
