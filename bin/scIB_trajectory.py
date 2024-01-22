@@ -27,7 +27,7 @@ import scib
 def run_scIB_trajectory(input_h5ad, unintegrated_h5ad, out_csv,  out_h5ad, species_key, batch_key, cluster_key, integration_method, root_cell):
     # dictionary for method properties
     embedding_keys={"scANVI": "X_scANVI", "harmony": "X_pca_harmony", "scanorama": "X_scanorama", "scVI": "X_scVI", "LIGER": "X_iNMF", "rligerUINMF":"X_inmf", "fastMNN": "X_mnn", "SAMap": "wPCA" }
-    use_embeddings={"scANVI": True, "harmony": True, "scanorama": True, "scVI": True, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": True , "seuratCCA": False, "seuratRPCA": False, "unintegrated": False}
+    use_embeddings={"scANVI": True, "harmony": True, "scanorama": True, "scVI": True, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": False , "seuratCCA": False, "seuratRPCA": False, "unintegrated": False}
     from_h5seurat={"scANVI": False, "harmony": False, "scanorama": False, "scVI": False, "LIGER": True, "rligerUINMF":True, "fastMNN": True, "SAMap": False , "seuratCCA": True, "seuratRPCA": True, "unintegrated": False}
     sc.set_figure_params(dpi_save=200, frameon=False, figsize=(10, 5))
     click.echo("Read anndata")
@@ -36,8 +36,8 @@ def run_scIB_trajectory(input_h5ad, unintegrated_h5ad, out_csv,  out_h5ad, speci
 
     species_all=input_ad.obs[species_key].astype("category").cat.categories.values
     # known bug - fix when convert h5Seurat to h5ad the index name error
-    if from_h5seurat[integration_method] is True:
-        input_ad.__dict__['_raw'].__dict__['_var'] = input_ad.__dict__['_raw'].__dict__['_var'].rename(columns={'_index': 'features'})
+    # if from_h5seurat[integration_method] is True:
+    #    input_ad.__dict__['_raw'].__dict__['_var'] = input_ad.__dict__['_raw'].__dict__['_var'].rename(columns={'_index': 'features'})
 
     use_embedding=use_embeddings[integration_method]
     if use_embedding is True:
