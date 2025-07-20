@@ -101,6 +101,10 @@ Note: add resume flag `-resume` as appropriate to avoid re-calculation of the sa
 
 Estimated execution time: ~6h for integrated dataset with 100,000 cells using resources specified in the .nf scripts.
 
+## Data
+
+Analysed data used in this paper (.h5ad) were deposited to [Figshare](https://figshare.com/articles/dataset/Single_cell_data_used_in_the_BENGAL_pipeline/29604461).
+
 ## Citation
 
 The publication in which we described and applied BENGAL is [here](https://www.nature.com/articles/s41467-023-41855-w). Please cite it if you use BENGAL.
